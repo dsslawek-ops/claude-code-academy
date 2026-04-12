@@ -34,6 +34,7 @@ export interface SlashCommand {
   id: string;
   command: string;
   description: string;
+  details: string;
   category: "session" | "navigation" | "model" | "tools" | "planning" | "dev" | "info" | "advanced";
   example?: string;
 }

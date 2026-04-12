@@ -8,7 +8,7 @@ import { tools } from "@/data/tools";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search } from "lucide-react";
+import { ChevronDown, ChevronRight, Search } from "lucide-react";
 
 const platformLabels: Record<string, string> = {
   macos: "macOS",
@@ -48,10 +48,13 @@ export default function CheatsheetPage() {
       s.context.toLowerCase().includes(q)
   );
 
+  const [expandedCmd, setExpandedCmd] = useState<string | null>(null);
+
   const filteredCommands = slashCommands.filter(
     (c) =>
       c.command.toLowerCase().includes(q) ||
-      c.description.toLowerCase().includes(q)
+      c.description.toLowerCase().includes(q) ||
+      c.details.toLowerCase().includes(q)
   );
 
   const filteredTools = tools.filter(
@@ -139,27 +142,46 @@ export default function CheatsheetPage() {
                   {label}
                 </h3>
                 <div className="space-y-1">
-                  {items.map((c) => (
-                    <div
-                      key={c.id}
-                      className="flex items-start gap-4 rounded-md px-3 py-2.5 transition-colors hover:bg-accent"
-                    >
-                      <code className="shrink-0 rounded bg-muted px-2 py-1 text-sm font-mono font-medium text-primary">
-                        {c.command}
-                      </code>
-                      <div className="min-w-0">
-                        <p className="text-sm">{c.description}</p>
-                        {c.example && (
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            Przykład:{" "}
-                            <code className="rounded bg-muted px-1 py-0.5 font-mono">
-                              {c.example}
-                            </code>
+                  {items.map((c) => {
+                    const isExpanded = expandedCmd === c.id;
+                    return (
+                      <div key={c.id}>
+                        <button
+                          onClick={() =>
+                            setExpandedCmd(isExpanded ? null : c.id)
+                          }
+                          className="flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-accent"
+                        >
+                          {isExpanded ? (
+                            <ChevronDown className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+                          ) : (
+                            <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+                          )}
+                          <code className="shrink-0 rounded bg-muted px-2 py-1 text-sm font-mono font-medium text-primary">
+                            {c.command}
+                          </code>
+                          <p className="min-w-0 text-sm">
+                            {c.description}
                           </p>
+                        </button>
+                        {isExpanded && (
+                          <div className="mb-2 ml-10 rounded-md border border-border bg-card p-4">
+                            <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                              {c.details}
+                            </p>
+                            {c.example && (
+                              <p className="mt-3 text-xs">
+                                <span className="font-medium">Przykład: </span>
+                                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-primary">
+                                  {c.example}
+                                </code>
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );
