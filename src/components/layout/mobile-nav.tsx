@@ -2,49 +2,56 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BookOpen,
-  GraduationCap,
-  Home,
-  Keyboard,
-  LifeBuoy,
-  Menu,
-  Newspaper,
-  Search,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { Menu, Search, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-
-const navItems = [
-  { href: "/", label: "Start", icon: Home },
-  { href: "/baza-wiedzy", label: "Baza wiedzy", icon: BookOpen },
-  { href: "/szkolenia", label: "Szkolenia", icon: GraduationCap },
-  { href: "/sciagawka", label: "Ściągawka", icon: Keyboard },
-  { href: "/troubleshooter", label: "Rozwiąż problem", icon: LifeBuoy },
-  { href: "/co-nowego", label: "Co nowego", icon: Newspaper },
-];
+import { navItems } from "@/lib/navigation";
+import { useState, useEffect } from "react";
 
 export function MobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  // Close on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when open
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
     <>
       {/* Top bar */}
-      <header className="fixed left-0 top-0 z-50 flex h-14 w-full items-center justify-between border-b border-border bg-card px-4 lg:hidden">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <span className="text-sm font-bold">Claude Code Academy</span>
+      <header className="fixed left-0 top-0 z-50 flex h-14 w-full items-center justify-between border-b border-border bg-sidebar/80 px-4 backdrop-blur-xl lg:hidden">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+          </div>
+          <span className="text-sm font-bold tracking-tight">
+            Claude Code Academy
+          </span>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/szukaj" className="rounded-md p-2 hover:bg-accent">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() =>
+              document.dispatchEvent(
+                new KeyboardEvent("keydown", { key: "k", metaKey: true })
+              )
+            }
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            aria-label="Szukaj"
+          >
             <Search className="h-5 w-5" />
-          </Link>
+          </button>
           <button
             onClick={() => setOpen(!open)}
-            className="rounded-md p-2 hover:bg-accent"
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            aria-label={open ? "Zamknij menu" : "Otwórz menu"}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -54,7 +61,7 @@ export function MobileNav() {
       {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
@@ -62,11 +69,11 @@ export function MobileNav() {
       {/* Drawer */}
       <nav
         className={cn(
-          "fixed right-0 top-14 z-50 h-[calc(100%-3.5rem)] w-64 border-l border-border bg-card transition-transform duration-200 lg:hidden",
+          "fixed right-0 top-14 z-50 h-[calc(100%-3.5rem)] w-72 border-l border-border bg-sidebar transition-transform duration-250 ease-out lg:hidden",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="space-y-1 p-3">
+        <div className="space-y-0.5 p-3">
           {navItems.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -75,14 +82,17 @@ export function MobileNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setOpen(false)}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                  "relative flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 )}
               >
+                {isActive && (
+                  <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" />
+                )}
                 <item.icon className="h-4 w-4" />
                 {item.label}
               </Link>

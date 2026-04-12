@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   title: "Claude Code Academy",
   description:
     "Interaktywna platforma szkoleniowa Claude Code — po polsku, dla nie-programistów",
+  metadataBase: new URL("https://claude-code-academy-tan.vercel.app"),
+  openGraph: {
+    title: "Claude Code Academy",
+    description: "Opanuj Claude Code — szkolenia, ściągawki, AI troubleshooter",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +34,11 @@ export default function RootLayout({
     <html
       lang="pl"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <meta name="theme-color" content="#0f1117" />
+      </head>
       <body className="min-h-full bg-background text-foreground">
         <TooltipProvider>{children}</TooltipProvider>
       </body>

@@ -79,8 +79,8 @@ export default function TroubleshooterPage() {
         </Button>
 
         {answer && (
-          <div className="mt-4 rounded-md border border-border bg-muted p-4">
-            <pre className="whitespace-pre-wrap text-sm">{answer}</pre>
+          <div className="mt-4 animate-fade-in rounded-lg border border-border bg-surface p-5 prose-custom">
+            <div dangerouslySetInnerHTML={{ __html: answer.replace(/\n/g, "<br/>") }} />
           </div>
         )}
       </div>
