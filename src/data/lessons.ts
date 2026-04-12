@@ -1741,4 +1741,1353 @@ Claude wykona wszystko w jednym przebiegu.
 
 Zmiany batchowe to jedno z najpotężniejszych narzędzi Claude Code. Gdzie kiedyś potrzebowałeś programisty na cały dzień, teraz robisz to **w kilka minut**. Pamiętaj o branchu, review i buildzie — to Twoja siatka bezpieczeństwa. Używaj śmiało, ale odpowiedzialnie.`,
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // LEARNING PATH: Claude Code in Action (cc-action)
+  // ═══════════════════════════════════════════════════════════════
+
+  // ═══════════════════════════════════════════════════════════════
+  // MODULE 1: Architektura i narzędzia (module_order: 1)
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: "ca1",
+    path_id: "cc-action",
+    module_name: "Architektura i narzędzia",
+    module_order: 1,
+    title: "Jak Claude Code widzi Twój projekt",
+    slug: "jak-claude-code-widzi-twoj-projekt",
+    duration_minutes: 7,
+    order: 1,
+    content: `# Jak Claude Code widzi Twój projekt
+
+## Claude to nie chatbot — to agent
+
+Zwykły chatbot (np. ChatGPT w przeglądarce) odpowiada na pytania. Claude Code to **agent** — samodzielnie podejmuje kroki, żeby wykonać Twoje zadanie. Różnica jest ogromna.
+
+Wyobraź sobie dwa scenariusze:
+
+| Chatbot | Agent (Claude Code) |
+|---------|---------------------|
+| "Oto kod, skopiuj go do pliku X" | Sam otwiera plik X, wkleja kod, zapisuje |
+| "Powinieneś uruchomić tę komendę" | Sam uruchamia komendę i sprawdza wynik |
+| "Sprawdź plik konfiguracyjny" | Sam znajduje i czyta plik konfiguracyjny |
+
+## Pętla agenta — jak Claude myśli
+
+Gdy dajesz Claude zadanie, uruchamia się **pętla agenta** (agentic loop). Działa to tak:
+
+1. **Odczytaj** — Claude czyta Twoje polecenie i zastanawia się co zrobić
+2. **Zaplanuj** — decyduje, jakiego narzędzia użyć (przeczytać plik? uruchomić komendę?)
+3. **Wykonaj** — używa wybranego narzędzia
+4. **Oceń** — sprawdza wynik i decyduje: czy zadanie gotowe, czy trzeba kolejny krok?
+5. **Powtórz** — jeśli zadanie nie jest gotowe, wraca do kroku 1
+
+To jak doświadczony pracownik, który dostaje zadanie i sam planuje kroki zamiast pytać o każdy szczegół.
+
+## Przykład pętli w praktyce
+
+Mówisz: *"Dodaj pole telefonu do formularza kontaktowego"*
+
+Claude wykonuje kolejno:
+1. **Szuka** pliku z formularzem (narzędzie Grep/Glob)
+2. **Czyta** ten plik, żeby zrozumieć obecną strukturę (narzędzie Read)
+3. **Edytuje** plik — dodaje pole telefonu (narzędzie Edit)
+4. **Szuka** pliku z walidacją — może tam też trzeba dodać telefon
+5. **Edytuje** plik walidacji
+6. **Uruchamia** build, żeby sprawdzić czy nie ma błędów (narzędzie Bash)
+7. **Raportuje** co zrobił
+
+Każdy z tych kroków to **jedno obrócenie pętli**. Claude może wykonać 5, 10 albo nawet 30 kroków w jednym zadaniu.
+
+## Co Claude widzi, a czego nie widzi
+
+| Widzi | Nie widzi |
+|-------|-----------|
+| Wszystkie pliki w folderze projektu | Pliki poza projektem |
+| Treść plików, gdy je otworzy | Twój ekran / przeglądarkę |
+| Wynik komend w terminalu | Bazę danych (bez dodatkowych narzędzi) |
+| Plik CLAUDE.md z instrukcjami | Twoje myśli — musisz je napisać |
+
+## Narzędzia — ręce Claude'a
+
+Claude "myśli" za pomocą modelu językowego, ale "działa" za pomocą **narzędzi** (tools). Każde narzędzie to jedna konkretna umiejętność:
+
+- **Read** — czytanie plików
+- **Edit** — edycja plików
+- **Write** — tworzenie nowych plików
+- **Bash** — uruchamianie komend w terminalu
+- **Grep** — szukanie tekstu w plikach
+- **Glob** — szukanie plików po nazwie
+
+Claude sam wybiera, którego narzędzia użyć w danym momencie. Ty nie musisz mu mówić "użyj narzędzia Read" — wystarczy powiedzieć "przeczytaj ten plik".
+
+## Analogia: kucharz w Twojej kuchni
+
+Claude Code to jak **kucharz**, który przychodzi do Twojej kuchni. Nie przynosi swoich produktów — korzysta z tego, co masz w lodówce (Twoje pliki). Ma własne narzędzia (noże, garnki = Read, Edit, Bash), ale gotuje z Twoich składników. Ty mówisz "zrób pierogi", on planuje kroki i gotuje. Ale to Ty próbujesz i mówisz "za mało soli".
+
+## Podsumowanie
+
+Claude Code to agent, który samodzielnie planuje i wykonuje kroki za pomocą narzędzi. Działa w pętli: czyta, planuje, wykonuje, ocenia. Twoja rola to dawać jasne zadania i weryfikować efekty.`,
+  },
+  {
+    id: "ca2",
+    path_id: "cc-action",
+    module_name: "Architektura i narzędzia",
+    module_order: 1,
+    title: "System narzędzi — jak Claude wykonuje zadania",
+    slug: "system-narzedzi-jak-claude-wykonuje-zadania",
+    duration_minutes: 8,
+    order: 2,
+    content: `# System narzędzi — jak Claude wykonuje zadania
+
+## Narzędzia to supermoc Claude'a
+
+Bez narzędzi Claude byłby tylko chatbotem — mógłby gadać, ale nie mógłby nic zrobić. Narzędzia pozwalają mu **działać w Twoim projekcie**: czytać pliki, edytować kod, uruchamiać komendy.
+
+Pomyśl o narzędziach jak o **skrzynce z narzędziami hydraulika**. Hydraulik nie używa wszystkich naraz — wybiera właściwe do danego zadania.
+
+## Przegląd narzędzi
+
+| Narzędzie | Co robi | Analogia | Przykład użycia |
+|-----------|---------|----------|-----------------|
+| **Read** | Czyta zawartość pliku | Otwarcie dokumentu | Claude czyta plik konfiguracyjny |
+| **Edit** | Zmienia fragment pliku | Poprawienie akapitu w dokumencie | Zmiana koloru przycisku |
+| **Write** | Tworzy nowy plik od zera | Napisanie nowego dokumentu | Stworzenie nowej strony |
+| **Bash** | Uruchamia komendy w terminalu | Zlecenie zadania asystentowi | \`npm run build\`, \`git status\` |
+| **Grep** | Szuka tekstu w plikach | Ctrl+F we wszystkich plikach | "Gdzie jest użyty kolor #3b82f6?" |
+| **Glob** | Szuka plików po nazwie | Szukanie dokumentu po nazwie | "Znajdź wszystkie pliki .tsx" |
+
+## Read — oczy Claude'a
+
+**Read** to najczęściej używane narzędzie. Claude czyta plik, żeby zrozumieć co w nim jest, zanim cokolwiek zmieni.
+
+Kiedy Claude używa Read:
+- Na początku zadania — żeby poznać strukturę projektu
+- Przed edycją — żeby wiedzieć co zmienić
+- Po błędzie — żeby zrozumieć co poszło nie tak
+
+Claude nie czyta wszystkich plików naraz — to byłoby jak próba przeczytania całej biblioteki. Czyta strategicznie, plik po pliku.
+
+## Edit vs Write — kiedy który?
+
+To częste pytanie. Zasada jest prosta:
+
+| Sytuacja | Narzędzie | Dlaczego |
+|----------|-----------|----------|
+| Plik już istnieje, zmieniasz fragment | **Edit** | Zmienia tylko to co trzeba, reszta nietknięta |
+| Tworzysz zupełnie nowy plik | **Write** | Nie ma czego edytować, trzeba stworzyć od zera |
+| Plik istnieje, ale przepisujesz go całkowicie | **Write** | Łatwiej napisać od nowa niż edytować wszystko |
+
+Claude sam wybiera właściwe narzędzie — nie musisz mu podpowiadać.
+
+## Bash — ręce Claude'a
+
+**Bash** to narzędzie, które pozwala Claude uruchamiać komendy w terminalu. To potężne narzędzie, bo pozwala:
+
+- Instalować paczki (\`npm install\`)
+- Budować projekt (\`npm run build\`)
+- Sprawdzać status git (\`git status\`)
+- Uruchamiać testy (\`npm test\`)
+- Tworzyć foldery (\`mkdir\`)
+
+Ważne: gdy Claude chce uruchomić komendę Bash, **pyta Cię o zgodę**. To zabezpieczenie — nie chcesz, żeby przypadkiem usunął ważne pliki.
+
+## Grep i Glob — detektywi
+
+Te dwa narzędzia pomagają Claude **znaleźć** rzeczy w projekcie:
+
+- **Grep** szuka **treści** — "w którym pliku jest tekst 'Witamy'?"
+- **Glob** szuka **plików** — "które pliki kończą się na .config.ts?"
+
+To jak różnica między szukaniem **słowa w książce** (Grep) a szukaniem **książki na półce** (Glob).
+
+## Jak Claude wybiera narzędzie?
+
+Claude nie rzuca monetą. Ma logikę:
+
+1. Zadanie wymaga informacji? → **Read** lub **Grep/Glob**
+2. Trzeba zmienić istniejący plik? → **Edit**
+3. Trzeba stworzyć nowy plik? → **Write**
+4. Trzeba uruchomić komendę? → **Bash**
+
+Często jedno zadanie wymaga **wielu narzędzi** w sekwencji. Np. "napraw błąd na stronie kontakt":
+1. **Grep** — szuka pliku ze stroną kontakt
+2. **Read** — czyta ten plik
+3. **Edit** — naprawia błąd
+4. **Bash** — uruchamia build, żeby sprawdzić
+
+## Podsumowanie
+
+Claude ma sześć głównych narzędzi i sam wybiera, którego użyć. Ty nie musisz mówić "użyj Read" — po prostu opisz zadanie, a Claude dobierze odpowiednie narzędzia. Im lepiej opiszesz problem, tym trafniej Claude wybierze narzędzia i sekwencję kroków.`,
+  },
+  {
+    id: "ca3",
+    path_id: "cc-action",
+    module_name: "Architektura i narzędzia",
+    module_order: 1,
+    title: "Wielokrokowe zadania — jak Claude planuje",
+    slug: "wielokrokowe-zadania-jak-claude-planuje",
+    duration_minutes: 7,
+    order: 3,
+    content: `# Wielokrokowe zadania — jak Claude planuje
+
+## Proste vs złożone zadania
+
+Nie każde zadanie to jedno kliknięcie. Są dwa rodzaje:
+
+| Proste zadanie | Złożone zadanie |
+|----------------|-----------------|
+| "Zmień kolor przycisku na zielony" | "Dodaj system logowania z rejestracją i resetem hasła" |
+| 1-2 kroki | 10-30 kroków |
+| Jeden plik | Wiele plików |
+| Sekundy | Minuty |
+
+Przy złożonych zadaniach Claude musi **zaplanować** zanim zacznie działać. Jak architekt rysuje projekt domu zanim murarz zacznie stawiać ściany.
+
+## Tryb planowania (Plan mode)
+
+Claude Code ma specjalny **tryb planowania**. Zamiast od razu pisać kod, najpierw przedstawia plan:
+
+> "Żeby dodać system logowania, muszę:
+> 1. Stworzyć stronę logowania (/login)
+> 2. Stworzyć stronę rejestracji (/register)
+> 3. Dodać middleware do ochrony stron
+> 4. Połączyć z Supabase Auth
+> 5. Dodać przycisk wylogowania w nawigacji"
+
+Ty możesz:
+- **Zaakceptować plan** — Claude zaczyna realizację
+- **Zmodyfikować** — "Pomiń reset hasła na razie"
+- **Doprecyzować** — "Użyj formularza z shadcn/ui"
+
+## Jak włączyć tryb planowania?
+
+Są dwa sposoby:
+
+### 1. Poproś wprost
+> "Zaplanuj dodanie galerii zdjęć. Nie implementuj jeszcze — pokaż mi plan."
+
+### 2. Użyj komendy /effort
+\`/effort\` kontroluje jak głęboko Claude myśli:
+- **low** — szybka odpowiedź, minimalny plan
+- **medium** — standardowe podejście
+- **high** — głębokie myślenie, dokładny plan
+
+Przy złożonych zadaniach warto ustawić \`/effort high\`.
+
+## Jak Claude rozkłada zadanie na kroki?
+
+Claude stosuje podejście **"od ogółu do szczegółu"**:
+
+1. **Rozumie cel** — co ma być efektem końcowym?
+2. **Identyfikuje komponenty** — jakie części trzeba stworzyć/zmienić?
+3. **Ustala kolejność** — co musi być pierwsze? (np. baza danych przed frontendem)
+4. **Realizuje krok po kroku** — jeden krok naraz, sprawdzając wynik
+
+Analogia: to jak **planowanie remontu mieszkania**. Nie zaczynasz od malowania ścian, jeśli nie masz jeszcze tynków. Kolejność ma znaczenie.
+
+## Praktyczny przykład: dodanie bloga
+
+Polecenie: *"Dodaj sekcję blog do strony"*
+
+Claude planuje:
+1. Sprawdź obecną strukturę projektu (Read/Glob)
+2. Stwórz tabelę \`posts\` w bazie danych (Bash — migracja SQL)
+3. Stwórz stronę listy postów \`/blog\` (Write)
+4. Stwórz stronę pojedynczego posta \`/blog/[slug]\` (Write)
+5. Dodaj link "Blog" do nawigacji (Edit)
+6. Stwórz komponent karty posta (Write)
+7. Dodaj przykładowe dane (Bash — seed)
+8. Uruchom build i sprawdź (Bash)
+
+Każdy krok zależy od poprzedniego — Claude nie stworzy strony posta, jeśli nie wie jeszcze jak wygląda struktura danych.
+
+## Kiedy warto planować?
+
+| Sytuacja | Czy planować? | Dlaczego |
+|----------|---------------|----------|
+| Zmiana koloru | Nie | Jeden plik, jeden krok |
+| Nowa strona | Raczej tak | Kilka plików, trzeba spiąć razem |
+| Nowa funkcja (auth, płatności) | Tak | Wiele plików, baza danych, logika |
+| Refaktoryzacja | Tak | Zmiana wielu plików naraz |
+
+## Wskazówka: dziel duże zadania
+
+Zamiast jednego ogromnego polecenia, podziel na etapy:
+
+Zamiast: *"Zbuduj cały sklep internetowy"*
+
+Lepiej:
+1. *"Stwórz stronę z listą produktów"*
+2. *"Dodaj koszyk"*
+3. *"Dodaj proces zamówienia"*
+4. *"Połącz z systemem płatności"*
+
+Mniejsze zadania = lepsze wyniki. Claude skupia się na jednym problemie naraz i robi to dokładniej.
+
+## Podsumowanie
+
+Claude potrafi planować złożone zadania krok po kroku. Używaj trybu planowania przy zadaniach wymagających wielu plików. Dziel duże zadania na mniejsze etapy — to daje najlepsze wyniki.`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // MODULE 2: Kontekst i pamięć (module_order: 2)
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: "ca4",
+    path_id: "cc-action",
+    module_name: "Kontekst i pamięć",
+    module_order: 2,
+    title: "Okno kontekstu — ile Claude pamięta",
+    slug: "okno-kontekstu-ile-claude-pamieta",
+    duration_minutes: 6,
+    order: 1,
+    content: `# Okno kontekstu — ile Claude pamięta
+
+## Czym jest okno kontekstu?
+
+Wyobraź sobie **biurko robocze**. Możesz na nim rozłożyć określoną liczbę dokumentów. Gdy biurko się zapełni, musisz odłożyć stare dokumenty, żeby zmieścić nowe. **Okno kontekstu** to właśnie takie biurko — ale cyfrowe.
+
+Okno kontekstu to ilość tekstu, którą Claude może "trzymać w głowie" podczas jednej rozmowy. Mierzy się ją w **tokenach** (w uproszczeniu: 1 token to mniej więcej 1 słowo).
+
+## Ile pamięta Claude?
+
+| Model | Okno kontekstu | W przybliżeniu |
+|-------|----------------|-----------------|
+| Claude Opus | **1 000 000 tokenów** | ~750 000 słów |
+| Claude Sonnet | 200 000 tokenów | ~150 000 słów |
+
+Milion tokenów to bardzo dużo — to **kilka grubych książek**. W praktyce oznacza to, że Claude może przeczytać i pamiętać jednocześnie tysiące linii kodu.
+
+## Co się dzieje, gdy okno się zapełnia?
+
+Gdy rozmowa jest bardzo długa, okno kontekstu się zapełnia. Claude zaczyna "zapominać" to, co było na początku rozmowy. To jak biurko — nowe dokumenty wypychają stare.
+
+Objaw: Claude nagle zapomina o ustaleniach z początku rozmowy albo pyta o coś, co już mu mówiłeś.
+
+## Trzy komendy ratunkowe
+
+### /compact — skompresuj rozmowę
+Gdy rozmowa się rozrasta, wpisz \`/compact\`. Claude:
+- Podsumuje dotychczasową rozmowę
+- Zapamięta kluczowe ustalenia
+- Zwolni miejsce w oknie kontekstu
+
+To jak **zrobienie notatek ze spotkania** zamiast trzymania w głowie każdego słowa.
+
+### /clear — zacznij od zera
+\`/clear\` czyści całą rozmowę. Używaj, gdy:
+- Zaczynasz nowe, niezwiązane zadanie
+- Rozmowa zrobiła się chaotyczna
+- Claude zaczął się "gubić"
+
+To jak **czyste biurko** — nowy start.
+
+### /context — sprawdź ile miejsca zostało
+\`/context\` pokazuje, ile okna kontekstu jest zajęte. Przydatne, żeby wiedzieć kiedy pora na \`/compact\`.
+
+## Praktyczne wskazówki
+
+### 1. Jedna rozmowa = jedno zadanie
+Nie rób 10 różnych rzeczy w jednej rozmowie. Po skończeniu zadania użyj \`/clear\` i zacznij nowe.
+
+### 2. Używaj /compact regularnie
+Przy długich sesjach (30+ minut) używaj \`/compact\` co kilkanaście minut. Claude zachowa ważne informacje i będzie pracował sprawniej.
+
+### 3. Nie wklejaj ogromnych plików ręcznie
+Zamiast wklejać 1000 linii kodu do rozmowy, powiedz:
+> "Przeczytaj plik src/app/page.tsx"
+
+Claude użyje narzędzia Read i przeczyta plik efektywniej niż gdybyś go wkleił.
+
+### 4. Kontekst to cenny zasób
+Każda wiadomość, każdy przeczytany plik, każdy wynik komendy **zajmuje miejsce** w oknie kontekstu. Dlatego:
+- Pisz zwięźle (ale precyzyjnie)
+- Nie proś Claude o tłumaczenie rzeczy, które są nieistotne
+- Skupiaj się na jednym zadaniu naraz
+
+## Analogia: rozmowa telefoniczna
+
+Rozmowa z Claude jest jak **rozmowa telefoniczna**, nie jak wymiana maili. Podczas rozmowy pamiętasz co powiedziano wcześniej — ale jeśli rozmowa trwa 5 godzin, zapominasz szczegóły z początku. \`/compact\` to jak krótkie podsumowanie "ok, więc ustaliliśmy że...".
+
+## Podsumowanie
+
+Okno kontekstu to ilość informacji, którą Claude trzyma w pamięci podczas rozmowy. Opus ma milion tokenów — dużo, ale nie nieskończenie. Używaj \`/compact\` do kompresji, \`/clear\` do nowego startu i \`/context\` do sprawdzenia stanu.`,
+  },
+  {
+    id: "ca5",
+    path_id: "cc-action",
+    module_name: "Kontekst i pamięć",
+    module_order: 2,
+    title: "CLAUDE.md na poważnie — zaawansowana konfiguracja",
+    slug: "claude-md-na-powaznie-zaawansowana-konfiguracja",
+    duration_minutes: 8,
+    order: 2,
+    content: `# CLAUDE.md na poważnie — zaawansowana konfiguracja
+
+## Więcej niż prosty opis projektu
+
+Jeśli znasz już podstawy CLAUDE.md (opis stacku, zasady, konwencje), czas na zaawansowane techniki. CLAUDE.md to potężne narzędzie — dobrze skonfigurowane może diametralnie zmienić jakość pracy Claude'a.
+
+## Importowanie innych plików — @file
+
+Nie musisz trzymać wszystkiego w jednym CLAUDE.md. Możesz **importować** inne pliki:
+
+\`\`\`markdown
+# CLAUDE.md
+
+## Architektura
+@docs/architecture.md
+
+## API
+@docs/api-reference.md
+
+## Konwencje
+@docs/coding-standards.md
+\`\`\`
+
+Gdy Claude czyta CLAUDE.md, automatycznie wciąga treść z importowanych plików. To jak dołączanie załączników do instrukcji.
+
+Kiedy używać importów:
+| Sytuacja | Rozwiązanie |
+|----------|-------------|
+| CLAUDE.md ma ponad 200 linii | Podziel na mniejsze pliki i importuj |
+| Dokumentacja API jest obszerna | Osobny plik, import w CLAUDE.md |
+| Masz wspólne zasady dla wielu projektów | Plik globalny + import |
+
+## Hierarchia plików konfiguracyjnych
+
+Claude czyta instrukcje z **trzech poziomów** (każdy kolejny jest bardziej szczegółowy):
+
+### Poziom 1: Globalny (~/.claude/CLAUDE.md)
+Zasady dla **wszystkich** Twoich projektów. Tu wpisujesz:
+- Preferowany język komunikacji (polski)
+- Globalny styl commitów
+- Uniwersalne zasady bezpieczeństwa
+
+### Poziom 2: Projekt (./CLAUDE.md)
+Zasady dla **tego konkretnego projektu**. Tu wpisujesz:
+- Stack technologiczny
+- Struktura folderów
+- Konwencje nazewnictwa
+- Integracje (Supabase, Stripe, itp.)
+
+### Poziom 3: Folder (.claude/rules/)
+Zasady dla **konkretnych części projektu**. Możesz tworzyć pliki w folderze \`.claude/rules/\`:
+
+\`\`\`
+.claude/
+  rules/
+    api.md          ← zasady dla plików API
+    components.md   ← zasady dla komponentów
+    database.md     ← zasady dla bazy danych
+\`\`\`
+
+Te pliki mogą mieć specjalne nagłówki, które mówią Claude **kiedy** je czytać:
+
+\`\`\`markdown
+---
+globs: src/api/**
+---
+# Zasady API
+- Każdy endpoint musi mieć walidację inputu
+- Zawsze zwracaj odpowiedni status HTTP
+\`\`\`
+
+Claude przeczyta ten plik **tylko** gdy pracuje z plikami w folderze \`src/api/\`.
+
+## Lokalny vs współdzielony CLAUDE.md
+
+| Plik | Kto widzi | Do czego |
+|------|-----------|----------|
+| \`CLAUDE.md\` (w głównym folderze) | Commitowany do git, wszyscy w zespole | Zasady projektu, stack, konwencje |
+| \`.claude/CLAUDE.local.md\` | **Nie commitowany** (w .gitignore) | Twoje prywatne preferencje |
+
+To ważne rozróżnienie. W pliku lokalnym możesz trzymać:
+- Ścieżki specyficzne dla Twojego komputera
+- Osobiste preferencje stylu
+- Notatki, których nie chcesz udostępniać zespołowi
+
+## Zaawansowane techniki
+
+### Definiowanie "osobowości"
+\`\`\`markdown
+## Styl odpowiedzi
+- Odpowiadaj zwięźle, bez zbędnych wyjaśnień
+- Nie pytaj o potwierdzenie przy prostych zadaniach
+- Przy złożonych — najpierw pokaż plan
+\`\`\`
+
+### Definiowanie zakazów
+\`\`\`markdown
+## NIGDY nie rób
+- Nie zmieniaj pliku middleware.ts
+- Nie usuwaj komentarzy TODO
+- Nie zmieniaj wersji zależności w package.json
+\`\`\`
+
+### Definiowanie procedur
+\`\`\`markdown
+## Po każdej zmianie
+1. Uruchom npm run build
+2. Sprawdź TypeScript errors
+3. Jeśli są testy — uruchom npm test
+\`\`\`
+
+## Weryfikacja konfiguracji
+
+Chcesz sprawdzić, czy Claude poprawnie czyta Twój CLAUDE.md? Wpisz:
+
+> "Pokaż mi jakie instrukcje z CLAUDE.md stosujesz w tym projekcie"
+
+Claude wypisze, co przeczytał i jakie zasady stosuje. To dobry sposób na debugowanie konfiguracji.
+
+## Podsumowanie
+
+CLAUDE.md to nie tylko opis projektu — to pełnoprawny system konfiguracji. Używaj importów (@file) do podziału treści, hierarchii plików do różnych poziomów szczegółowości i folderu \`.claude/rules/\` do zasad kontekstowych. Lokalne pliki trzymaj poza gitem.`,
+  },
+  {
+    id: "ca6",
+    path_id: "cc-action",
+    module_name: "Kontekst i pamięć",
+    module_order: 2,
+    title: "Auto-memory i wznawianie sesji",
+    slug: "auto-memory-i-wznawianie-sesji",
+    duration_minutes: 6,
+    order: 3,
+    content: `# Auto-memory i wznawianie sesji
+
+## Problem: Claude zapomina między sesjami
+
+Zamykasz terminal, idziesz na obiad, wracasz, piszesz \`claude\` — i Claude nie pamięta nic z poprzedniej rozmowy. To jak pracownik, który codziennie rano zapomina co robił wczoraj.
+
+Na szczęście są rozwiązania: **auto-memory**, komenda **/memory** i **wznawianie sesji**.
+
+## Auto-memory — Claude notuje sam
+
+Claude Code ma system **automatycznej pamięci**. Gdy podczas rozmowy pojawią się ważne ustalenia, Claude może sam zapisać je do pliku pamięci (\`~/.claude/memory.md\` lub \`CLAUDE.md\`).
+
+Kiedy auto-memory się włącza:
+- Gdy ustalicie ważną konwencję ("od teraz commit messages po angielsku")
+- Gdy poprawisz Claude'a i powie "zapamiętam na przyszłość"
+- Gdy wyraźnie powiesz "zapamiętaj to"
+
+Co Claude zapamiętuje:
+| Zapamiętuje | Nie zapamiętuje |
+|-------------|-----------------|
+| Konwencje projektu | Szczegóły pojedynczego zadania |
+| Twoje preferencje | Treść konkretnych plików |
+| Ważne decyzje architektoniczne | Tymczasowe ustalenia |
+| Nazwy kluczowych plików | Każde zdanie z rozmowy |
+
+## /memory — ręczne zarządzanie pamięcią
+
+Komenda \`/memory\` pozwala Ci **ręcznie** zarządzać tym, co Claude pamięta:
+
+### Dodawanie do pamięci
+> "/memory Projekt używa Supabase Auth z magicznym linkiem, nie hasłami"
+
+### Przeglądanie pamięci
+> "/memory"
+Pokazuje co Claude ma zapisane.
+
+### Kiedy używać /memory?
+- Na początku nowego projektu — wpisz kluczowe informacje
+- Gdy podejmujesz ważną decyzję architektoniczną
+- Gdy Claude powtarza ten sam błąd — zapisz korektę do pamięci
+
+## /resume — wznawianie sesji
+
+\`/resume\` to komenda, która pozwala **wrócić do poprzedniej rozmowy**. Zamiast zaczynać od zera, kontynuujesz tam, gdzie skończyłeś.
+
+Jak to działa:
+1. Zamykasz terminal (Ctrl+C lub po prostu zamykasz okno)
+2. Wracasz, piszesz \`claude\`
+3. Wpisujesz \`/resume\`
+4. Claude ładuje poprzednią rozmowę i kontynuuje
+
+Możesz też od razu uruchomić z flagą:
+\`\`\`
+claude --resume
+\`\`\`
+
+### Kiedy /resume jest przydatne?
+| Sytuacja | Użyj /resume? |
+|----------|---------------|
+| Przerwa na obiad w trakcie zadania | Tak |
+| Pad komputera w połowie pracy | Tak |
+| Nowe, niezwiązane zadanie | Nie — lepiej /clear |
+| Kontynuacja wczorajszej pracy | Tak, jeśli to to samo zadanie |
+
+## Strategie pamięci — co robić na co dzień
+
+### Strategia 1: "Notatka na start dnia"
+Na początku dnia pracy napisz do Claude:
+> "Kontynuuję pracę nad systemem zamówień. Wczoraj skończyłem formularz, dziś robię integrację z płatnościami."
+
+Jeden zdanie kontekstu oszczędza 10 minut nieporozumień.
+
+### Strategia 2: "Zapisuj decyzje"
+Gdy podejmiesz ważną decyzję:
+> "Zapamiętaj: zdecydowaliśmy, że ceny będą w groszach (integer), nie w złotych (float)"
+
+Claude zapisze to i nie będzie już proponował cen jako liczb zmiennoprzecinkowych.
+
+### Strategia 3: "CLAUDE.md jako źródło prawdy"
+Najważniejsze ustalenia wpisuj do CLAUDE.md, nie tylko do pamięci. CLAUDE.md jest czytany **zawsze** na starcie rozmowy — to gwarancja, że Claude nie zapomni.
+
+## Jak to wszystko współgra?
+
+\`\`\`
+Poziom 1: CLAUDE.md        → czytany ZAWSZE
+Poziom 2: Auto-memory      → dodawany automatycznie
+Poziom 3: /memory           → dodawany ręcznie
+Poziom 4: /resume           → kontynuacja rozmowy
+\`\`\`
+
+Najtrwalsze są informacje w CLAUDE.md. Najmniej trwałe — /resume (trwa tylko do następnej sesji).
+
+## Podsumowanie
+
+Claude ma trzy systemy pamięci: auto-memory (zapisuje sam), /memory (zapisujesz Ty) i /resume (wznawia rozmowę). Najważniejsze ustalenia trzymaj w CLAUDE.md — to jedyne miejsce, które Claude czyta zawsze, niezależnie od sesji.`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // MODULE 3: Komunikacja i wizualizacja (module_order: 3)
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: "ca7",
+    path_id: "cc-action",
+    module_name: "Komunikacja i wizualizacja",
+    module_order: 3,
+    title: "Screenshoty i obrazy — pokaż Claude co widzisz",
+    slug: "screenshoty-i-obrazy-pokaz-claude-co-widzisz",
+    duration_minutes: 5,
+    order: 1,
+    content: `# Screenshoty i obrazy — pokaż Claude co widzisz
+
+## Obraz wart więcej niż tysiąc słów
+
+Próbowałeś kiedyś opisać słowami co widzisz na ekranie? "Ten przycisk jest za duży, a tekst nachodzi na obrazek, i w prawym górnym rogu jest dziwna linia..." — to frustrujące i nieprecyzyjne.
+
+Claude Code rozumie obrazy. Możesz mu **pokazać** co widzisz, zamiast opisywać.
+
+## Jak wkleić screenshot?
+
+### Metoda 1: Wklej ze schowka
+1. Zrób screenshot (\`Cmd + Shift + 4\` na macOS)
+2. W terminalu z Claude wklej obraz (\`Cmd + V\`)
+3. Claude zobaczy obraz i zrozumie kontekst
+
+### Metoda 2: Podaj ścieżkę do pliku
+> "Spójrz na screenshot w ~/Desktop/bug-screenshot.png i powiedz co jest nie tak"
+
+### Metoda 3: Przeciągnij i upuść
+W niektórych terminalach możesz po prostu przeciągnąć plik obrazu do okna czatu.
+
+## Co Claude widzi na screenshocie?
+
+Claude analizuje obraz jak człowiek — widzi:
+- **Układ strony** — co jest gdzie, jakie elementy są widoczne
+- **Kolory** — czy coś jest za ciemne, za jasne, nieczytelne
+- **Tekst na obrazie** — czyta tekst widoczny na screenshocie
+- **Błędy wizualne** — nachodzące elementy, złe wyrównanie, brakujące grafiki
+- **Stan interfejsu** — komunikaty błędów, puste pola, spinner ładowania
+
+## Kiedy używać screenshotów?
+
+| Sytuacja | Przykład polecenia |
+|----------|-------------------|
+| **Błąd wizualny** | "Spójrz na ten screenshot — przycisk nachodzi na tekst. Napraw to." |
+| **Porównanie z designem** | "Oto mockup z Figmy. Zrób żeby strona wyglądała tak samo." |
+| **Błąd w przeglądarce** | "Mam taki błąd w konsoli [screenshot]. Co to znaczy i jak naprawić?" |
+| **Responsywność** | "Tak wygląda strona na telefonie [screenshot]. Menu się rozjeżdża." |
+
+## Praktyczne przykłady
+
+### Raportowanie błędu wizualnego
+Zamiast: *"Na stronie produktu cena jest ucięta po prawej stronie i nie widać groszy"*
+
+Lepiej: *"Spójrz na ten screenshot [wklej]. Napraw wyświetlanie ceny."*
+
+Claude widzi dokładnie co jest nie tak i naprawia celniej.
+
+### Implementacja z mockupu
+> "Oto design strony głównej [screenshot z Figmy]. Zaimplementuj to w komponencie HeroSection."
+
+Claude porówna obecny wygląd z mockupem i dopasuje.
+
+### Debugging z konsoli
+Zrzut ekranu błędu z przeglądarki (F12 > Console) to **złoto dla Claude'a**. Widzi dokładny komunikat błędu, stack trace i kontekst.
+
+## Ograniczenia
+
+- Claude **nie widzi Twojego ekranu na żywo** — musisz zrobić screenshot
+- Bardzo długie screenshoty (np. cała strona) mogą być nieczytelne — lepiej przyciąć do problematycznego fragmentu
+- Claude nie widzi animacji — screenshot to pojedyncza klatka
+
+## Wskazówki
+
+1. **Przycinaj screenshoty** — pokaż konkretny fragment, nie cały ekran
+2. **Zaznacz problem** — narysuj strzałkę lub kółko wokół problemu (Preview na macOS: Cmd + Shift + A)
+3. **Dodaj kontekst tekstem** — "Ten screenshot jest z /produkty na Safari, iPhone 14"
+
+## Podsumowanie
+
+Screenshoty to najszybszy sposób na komunikację wizualną z Claude. Zamiast opisywać problem słowami, pokaż go. Claude rozumie obrazy i potrafi na ich podstawie naprawić błędy wizualne, zaimplementować design i zdiagnozować problemy.`,
+  },
+  {
+    id: "ca8",
+    path_id: "cc-action",
+    module_name: "Komunikacja i wizualizacja",
+    module_order: 3,
+    title: "Diff view — przeglądanie zmian",
+    slug: "diff-view-przegladanie-zmian",
+    duration_minutes: 6,
+    order: 2,
+    content: `# Diff view — przeglądanie zmian
+
+## Co to jest diff?
+
+**Diff** (od angielskiego "difference" — różnica) to zestawienie tego, co **było** i co **jest teraz** w pliku. Pokazuje dokładnie które linie zostały dodane, usunięte lub zmienione.
+
+Analogia: wyobraź sobie, że porównujesz dwie wersje umowy. Prawnik zaznacza na żółto co dodano i przekreśla co usunięto. Diff robi dokładnie to samo, ale dla kodu.
+
+## Jak wygląda diff?
+
+\`\`\`diff
+- <button className="bg-gray-500 text-white">
++ <button className="bg-green-500 text-white font-bold">
+    Kup teraz
+  </button>
+\`\`\`
+
+| Symbol | Znaczenie | Kolor |
+|--------|-----------|-------|
+| \`-\` | Usunięta linia | Czerwony |
+| \`+\` | Dodana linia | Zielony |
+| (brak) | Niezmieniona linia | Szary |
+
+W powyższym przykładzie: zmieniono kolor przycisku z szarego na zielony i dodano pogrubienie.
+
+## Kiedy widzisz diff?
+
+### 1. Gdy Claude proponuje zmianę
+Gdy Claude chce edytować plik, pokazuje Ci diff:
+\`\`\`
+Claude wants to edit src/components/Button.tsx
+
+- bg-gray-500
++ bg-green-500
+
+[y] Accept  [n] Reject  [e] Edit
+\`\`\`
+
+To Twój moment decyzji. Sprawdź diff i zdecyduj:
+- **y** — zmiana wygląda dobrze, akceptuję
+- **n** — nie chcę tej zmiany
+- **e** — chcę zmodyfikować to co Claude proponuje
+
+### 2. Komenda /diff
+Wpisz \`/diff\` w rozmowie z Claude, żeby zobaczyć **wszystkie zmiany** od początku sesji. To przydatne, gdy Claude zrobił wiele zmian i chcesz je przejrzeć naraz.
+
+### 3. Git diff przed commitem
+Przed zapisaniem zmian (commitem) warto zobaczyć co się zmieniło:
+> "Pokaż mi git diff — co się zmieniło?"
+
+Claude uruchomi \`git diff\` i pokaże wszystkie modyfikacje.
+
+## Jak czytać diff — poradnik dla nie-programistów
+
+Nie musisz rozumieć każdej linii kodu. Szukaj tych rzeczy:
+
+### 1. Nazwa pliku
+Na górze diffa widać **który plik** się zmienił. Sprawdź czy to właściwy plik.
+
+### 2. Rozmiar zmiany
+Dużo zielonych linii (dodania) = Claude stworzył sporo nowego kodu. Kilka linii = drobna zmiana. Jeśli spodziewałeś się drobnej zmiany, a diff jest ogromny — zapytaj Claude'a dlaczego.
+
+### 3. Usunięcia
+Czerwone linie (usunięcia) wymagają uwagi. Claude coś usunął — czy to było zamierzone? Jeśli nie jesteś pewien, zapytaj:
+> "Dlaczego usunąłeś te linie? Co one robiły?"
+
+### 4. Czytelne fragmenty
+Nawet bez znajomości kodu, możesz zauważyć:
+- Zmianę tekstu (np. "Witamy" → "Cześć")
+- Zmianę kolorów (np. "gray-500" → "green-500")
+- Dodanie nowych elementów (np. nowy \`<button>\`)
+
+## Praktyka: review przed commitem
+
+Dobra praktyka to **zawsze** przejrzeć zmiany przed commitem:
+
+1. Claude kończy zadanie
+2. Wpisujesz: *"Pokaż podsumowanie zmian"*
+3. Claude listuje zmienione pliki i kluczowe modyfikacje
+4. Sprawdzasz czy wszystko się zgadza
+5. Dopiero wtedy: *"Ok, commituj z opisem 'feat: add green buy button'"*
+
+To jak **sprawdzenie paragonu** przed zapłaceniem — zajmuje sekundę, a może uratować przed problemem.
+
+## Cofanie zmian
+
+Zaakceptowałeś zmianę, ale jest źle? Masz opcje:
+- **Cmd + Z** w edytorze — cofnij ostatnią zmianę
+- \`git checkout -- nazwa-pliku\` — przywróć plik do ostatniego commita
+- Powiedz Claude: *"Cofnij ostatnią zmianę w pliku X"*
+
+## Podsumowanie
+
+Diff to zestawienie zmian w pliku — czerwone linie usunięte, zielone dodane. Zawsze przeglądaj diff przed akceptacją zmian Claude'a. Używaj \`/diff\` do przeglądu wszystkich zmian w sesji. Nie musisz rozumieć kodu — szukaj nazw plików, rozmiaru zmian i czytelnych fragmentów tekstowych.`,
+  },
+  {
+    id: "ca9",
+    path_id: "cc-action",
+    module_name: "Komunikacja i wizualizacja",
+    module_order: 3,
+    title: "Tryby myślenia — kiedy który",
+    slug: "tryby-myslenia-kiedy-ktory",
+    duration_minutes: 6,
+    order: 3,
+    content: `# Tryby myślenia — kiedy który
+
+## Claude nie zawsze myśli tak samo
+
+Wyobraź sobie, że prosisz kogoś o pomoc. Przy prostym pytaniu ("Która godzina?") nie potrzeba głębokiego namysłu. Ale przy złożonym problemie ("Jak zreorganizować firmę?") chcesz, żeby ktoś się dobrze zastanowił.
+
+Claude Code ma **tryby myślenia**, które kontrolują jak głęboko analizuje problem.
+
+## Trzy poziomy wysiłku (/effort)
+
+Komenda \`/effort\` pozwala ustawić poziom myślenia:
+
+| Poziom | Komenda | Jak Claude pracuje | Analogia |
+|--------|---------|-------------------|----------|
+| **Niski** | \`/effort low\` | Szybka, zwięzła odpowiedź. Minimum analizy | Odpowiedź SMS-em |
+| **Średni** | \`/effort medium\` | Standardowe podejście. Dobry balans | Rozmowa telefoniczna |
+| **Wysoki** | \`/effort high\` | Głęboka analiza, dokładny plan, rozważa alternatywy | Spotkanie projektowe |
+
+### Kiedy jaki poziom?
+
+| Zadanie | Rekomendowany /effort | Dlaczego |
+|---------|-----------------------|----------|
+| "Zmień tytuł strony" | low | Proste, jednokrokowe zadanie |
+| "Dodaj nową stronę /regulamin" | medium | Kilka kroków, ale jasne co zrobić |
+| "Zaprojektuj system uprawnień użytkowników" | high | Złożone, wiele decyzji architektonicznych |
+| "Napraw literówkę" | low | Trywialne |
+| "Przepisz moduł płatności" | high | Kluczowy moduł, potrzeba dokładności |
+
+## Tryb domyślny vs tryb planowania (Plan mode)
+
+Claude Code ma dwa główne tryby pracy:
+
+### Tryb domyślny
+Claude od razu zaczyna pracę — czyta pliki, edytuje, uruchamia komendy. Dobry dla jasnych, konkretnych zadań.
+
+> "Zmień kolor nagłówka na niebieski"
+→ Claude od razu edytuje plik. Gotowe.
+
+### Tryb planowania
+Claude najpierw **przedstawia plan**, a dopiero po Twojej akceptacji go realizuje. Dobry dla złożonych zadań.
+
+Jak włączyć:
+> "Zaplanuj dodanie systemu komentarzy. Nie implementuj — pokaż plan."
+
+Albo użyj komendy:
+\`\`\`
+/effort high
+\`\`\`
+
+Przy wysokim wysiłku Claude naturalnie zaczyna od planu.
+
+## Porównanie trybów — praktyczny przewodnik
+
+| Cecha | Tryb domyślny | Tryb planowania |
+|-------|--------------|-----------------|
+| **Szybkość** | Szybki | Wolniejszy (ale dokładniejszy) |
+| **Kontrola** | Mniejsza — Claude działa sam | Większa — akceptujesz plan |
+| **Ryzyko błędu** | Wyższe przy złożonych zadaniach | Niższe — plan wyłapuje problemy |
+| **Najlepszy dla** | Prostych zmian | Nowych funkcji, refaktoryzacji |
+
+## Praktyczne wskazówki
+
+### 1. Zacznij od medium, dostosuj w razie potrzeby
+\`/effort medium\` to dobry domyślny poziom. Jeśli Claude daje za krótkie odpowiedzi — przełącz na high. Jeśli za długo myśli nad prostym zadaniem — przełącz na low.
+
+### 2. Używaj high na początku projektu
+Gdy zaczynasz nową funkcjonalność, warto żeby Claude dobrze przemyślał architekturę. Potem, przy drobnych poprawkach, przełącz na low/medium.
+
+### 3. Nie bój się zmieniać trybu w trakcie
+Możesz zacząć od \`/effort high\` (planowanie) i po akceptacji planu przełączyć na \`/effort medium\` (szybsza realizacja).
+
+### 4. Tryb wysoki = lepsza jakość przy debugowaniu
+Gdy Claude nie potrafi naprawić błędu, przełącz na \`/effort high\`. Głębsza analiza często znajduje przyczynę, której szybki tryb pomija.
+
+## Analogia: gaz w samochodzie
+
+- **Low** = jazda po mieście — szybko, bez zastanawiania się nad każdym zakrętem
+- **Medium** = jazda po nieznanych drogach — uważnie, ale płynnie
+- **High** = planowanie trasy na długą podróż — analiza mapy, tankowania, postoje
+
+Nie jedziesz 200 km/h po osiedlu i nie 30 km/h na autostradzie. Dobierasz prędkość do sytuacji.
+
+## Podsumowanie
+
+Używaj \`/effort low\` dla prostych zadań, \`/effort medium\` jako domyślny, \`/effort high\` dla złożonych problemów. Tryb planowania daje więcej kontroli, ale zajmuje więcej czasu. Dostosowuj tryb do zadania — to klucz do efektywnej pracy z Claude.`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════
+  // MODULE 4: Automatyzacja i integracja (module_order: 4)
+  // ═══════════════════════════════════════════════════════════════
+  {
+    id: "ca10",
+    path_id: "cc-action",
+    module_name: "Automatyzacja i integracja",
+    module_order: 4,
+    title: "Własne automatyzacje — Skills i hooks",
+    slug: "wlasne-automatyzacje-skills-i-hooks",
+    duration_minutes: 8,
+    order: 1,
+    content: `# Własne automatyzacje — Skills i hooks
+
+## Automatyzacja = mniej powtarzania
+
+Jeśli za każdym razem mówisz Claude to samo — "po commicie uruchom build", "sprawdź TypeScript przed pushem", "dodaj testy po stworzeniu komponentu" — to znak, że potrzebujesz automatyzacji.
+
+Claude Code oferuje dwa mechanizmy: **Skills** (umiejętności) i **Hooks** (haki automatyczne).
+
+## Skills — nauczanie Claude nowych umiejętności
+
+**Skill** to gotowy przepis, który Claude może wykonać na żądanie. To jak makro w Excelu — raz definiujesz, wielokrotnie używasz.
+
+### Jak to działa?
+Skill to plik Markdown (np. \`deploy.md\`) z instrukcjami, które Claude wykonuje gdy go "wywołasz".
+
+### Przykład: skill do deploymentu
+
+Plik \`.claude/skills/deploy.md\`:
+\`\`\`markdown
+# Deploy na produkcję
+
+1. Uruchom npm run build
+2. Sprawdź czy nie ma błędów TypeScript
+3. Uruchom testy (npm test)
+4. Jeśli wszystko przeszło — git add, commit, push
+5. Poczekaj na Vercel deploy
+6. Sprawdź czy strona działa
+\`\`\`
+
+Użycie w rozmowie:
+> "/deploy" lub "Uruchom skill deploy"
+
+Claude wykona wszystkie kroki po kolei.
+
+### Kiedy tworzyć skill?
+| Sytuacja | Czy robić skill? |
+|----------|-----------------|
+| Robisz to samo 3+ razy w tygodniu | Tak |
+| Procedura ma więcej niż 3 kroki | Tak |
+| Jednorazowe zadanie | Nie |
+| Kroki wymagają Twojej decyzji na każdym etapie | Raczej nie |
+
+## Hooks — automatyczne reagowanie na zdarzenia
+
+**Hook** to automatyczna akcja, która uruchamia się **sama** przy określonym zdarzeniu. Nie musisz nic mówić — hook działa w tle.
+
+### Rodzaje hooków
+
+| Hook | Kiedy się uruchamia | Przykład użycia |
+|------|---------------------|-----------------|
+| **Pre-commit** | Przed commitem | Sprawdź lint i formatowanie |
+| **Post-commit** | Po commicie | Wyślij powiadomienie |
+| **Pre-push** | Przed pushem na serwer | Uruchom testy |
+| **On file save** | Gdy plik jest zapisywany | Auto-formatowanie |
+
+### Jak skonfigurować hook?
+
+Hooki konfiguruje się w pliku \`.claude/settings.json\`:
+
+\`\`\`json
+{
+  "hooks": {
+    "pre-commit": ["npm run lint", "npm run typecheck"],
+    "pre-push": ["npm test"]
+  }
+}
+\`\`\`
+
+Teraz za każdym razem, gdy Claude (lub Ty) będziesz commitować, automatycznie uruchomi się lint i sprawdzenie typów.
+
+## Skills vs Hooks — porównanie
+
+| Cecha | Skills | Hooks |
+|-------|--------|-------|
+| **Uruchomienie** | Ręczne (piszesz komendę) | Automatyczne (przy zdarzeniu) |
+| **Kontrola** | Pełna — decydujesz kiedy | Brak — uruchamia się sam |
+| **Złożoność** | Mogą być bardzo rozbudowane | Raczej proste, szybkie akcje |
+| **Przykład** | Deploy, code review, setup | Lint, format, testy |
+
+Analogia:
+- **Skill** to jak przycisk "Uruchom raport" w systemie — klikasz gdy chcesz
+- **Hook** to jak automatyczne zamykanie drzwi — dzieje się samo, bez Twojego udziału
+
+## Praktyczne przykłady hooków
+
+### Hook: auto-format po zapisie
+Automatycznie formatuje kod po każdym zapisie pliku. Koniec z nierównym wcięciem.
+
+### Hook: sprawdzenie bezpieczeństwa przed pushem
+Przed wypchnięciem kodu na serwer, hook sprawdza czy nie commitnąłeś przypadkiem haseł lub kluczy API.
+
+### Hook: build po commicie
+Po każdym commicie automatycznie uruchamia build — od razu wiesz, czy coś się zepsuło.
+
+## Tworzenie własnych Skills i Hooków
+
+Poproś Claude:
+> "Stwórz skill do generowania komponentu React z testem. Skill powinien pytać o nazwę komponentu i tworzyć plik .tsx oraz plik .test.tsx."
+
+Albo:
+> "Skonfiguruj hook pre-commit, który uruchamia npm run lint i npm run build."
+
+Claude stworzy odpowiednie pliki i konfigurację.
+
+## Podsumowanie
+
+Skills to przepisy uruchamiane na żądanie — idealne dla powtarzalnych procedur. Hooks to automatyczne akcje przy zdarzeniach — idealne dla walidacji i formatowania. Zacznij od prostych hooków (lint, build) i dodawaj skills w miarę potrzeb.`,
+  },
+  {
+    id: "ca11",
+    path_id: "cc-action",
+    module_name: "Automatyzacja i integracja",
+    module_order: 4,
+    title: "MCP Servers — rozszerzanie Claude",
+    slug: "mcp-servers-rozszerzanie-claude",
+    duration_minutes: 7,
+    order: 2,
+    content: `# MCP Servers — rozszerzanie Claude
+
+## Problem: Claude nie zna Twoich usług
+
+Domyślnie Claude Code umie czytać pliki, edytować kod i uruchamiać komendy. Ale **nie ma dostępu** do Twojej bazy danych, systemu płatności, Slacka czy Figmy. To jak pracownik, który ma dostęp do biura, ale nie ma loginów do żadnego systemu firmowego.
+
+**MCP Servers** rozwiązują ten problem.
+
+## Czym jest MCP?
+
+**MCP** (Model Context Protocol) to standard, który pozwala podłączyć Claude'a do **zewnętrznych usług**. Każdy MCP Server daje Claude nowe umiejętności.
+
+Analogia: pomyśl o MCP jak o **wtyczkach do przeglądarki**. Przeglądarka sama w sobie wyświetla strony — ale z wtyczką do blokowania reklam robi więcej. Claude sam w sobie czyta pliki — ale z MCP do Supabase zarządza bazą danych.
+
+## Popularne MCP Servers
+
+| MCP Server | Co daje Claude'owi | Przykład użycia |
+|------------|--------------------|-----------------|
+| **Supabase** | Dostęp do bazy danych, auth, storage | "Pokaż ostatnich 10 użytkowników z bazy" |
+| **GitHub** | Pull requesty, issues, code review | "Stwórz PR z opisem zmian" |
+| **Slack** | Wysyłanie wiadomości, czytanie kanałów | "Wyślij podsumowanie na kanał #dev" |
+| **Figma** | Czytanie designów, komponentów | "Zaimplementuj ten design z Figmy" |
+| **Stripe** | Płatności, subskrypcje, faktury | "Sprawdź status płatności klienta" |
+| **Google Analytics** | Dane o ruchu, konwersje | "Pokaż ruch na stronie z ostatniego tygodnia" |
+
+## Jak podłączyć MCP Server?
+
+### Krok 1: Konfiguracja
+MCP Servers konfiguruje się w pliku \`.claude/settings.json\` lub globalnie w \`~/.claude/settings.json\`:
+
+\`\`\`json
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "url",
+      "url": "https://mcp.supabase.com"
+    }
+  }
+}
+\`\`\`
+
+### Krok 2: Autoryzacja (OAuth)
+Większość MCP Servers wymaga autoryzacji — logujesz się do usługi, żeby dać Claude'owi dostęp. To jak logowanie przez Google na stronie — klikasz "Zezwól" i gotowe.
+
+### Krok 3: Używanie
+Po podłączeniu Claude **automatycznie** wie, że ma nowe możliwości. Nie musisz mówić "użyj MCP Supabase" — po prostu mówisz:
+
+> "Pokaż wszystkich użytkowników z tabeli users"
+
+Claude sam użyje MCP Supabase, żeby wykonać zapytanie.
+
+## MCP lokalne vs chmurowe
+
+| Typ | Gdzie działa | Przykład | Plusy |
+|-----|-------------|---------|-------|
+| **Chmurowe** | Na serwerze usługi | Supabase, GitHub, Slack | Zero konfiguracji, auto-aktualizacje |
+| **Lokalne** | Na Twoim komputerze | Google Ads MCP, custom MCP | Pełna kontrola, prywatność danych |
+
+MCP lokalne to programy uruchomione na Twoim komputerze, które Claude odpytuje. Przydatne gdy:
+- Usługa nie ma oficjalnego MCP
+- Chcesz pełną kontrolę nad danymi
+- Integrujesz się z wewnętrznym systemem firmy
+
+## Bezpieczeństwo MCP
+
+Ważne zasady:
+- **Sprawdzaj uprawnienia** — daj Claude'owi tylko te uprawnienia, których potrzebuje
+- **Nie dawaj write access bez potrzeby** — jeśli Claude ma tylko czytać dane, nie dawaj mu możliwości zapisu
+- **Oficjalne MCP są bezpieczniejsze** — sprawdzone przez twórców usługi
+- **Tokeny w env** — nigdy nie wpisuj tokenów bezpośrednio w konfiguracji
+
+## Praktyczny przykład: Supabase MCP
+
+Po podłączeniu Supabase MCP, Claude może:
+
+| Akcja | Przykład polecenia |
+|-------|-------------------|
+| Czytać dane | "Pokaż 5 ostatnich zamówień" |
+| Pisać dane | "Dodaj nowy produkt: Pellet Premium, 1200 zł/t" |
+| Zarządzać tabelami | "Dodaj kolumnę 'telefon' do tabeli klientów" |
+| Sprawdzać polityki RLS | "Czy tabela orders ma włączone RLS?" |
+| Edge Functions | "Zadeploy edge function do wysyłania maili" |
+
+Wszystko przez naturalną rozmowę, bez pisania SQL ręcznie.
+
+## Podsumowanie
+
+MCP Servers to wtyczki rozszerzające możliwości Claude'a. Podłączasz usługę (Supabase, GitHub, Slack), autoryzujesz dostęp i Claude zyskuje nowe umiejętności. Konfiguracja w settings.json, autoryzacja przez OAuth. Pamiętaj o bezpieczeństwie — dawaj minimalne uprawnienia.`,
+  },
+  {
+    id: "ca12",
+    path_id: "cc-action",
+    module_name: "Automatyzacja i integracja",
+    module_order: 4,
+    title: "Integracja z GitHub — PR, code review, CI/CD",
+    slug: "integracja-z-github-pr-code-review-cicd",
+    duration_minutes: 8,
+    order: 3,
+    content: `# Integracja z GitHub — PR, code review, CI/CD
+
+## GitHub to Twoje centrum dowodzenia
+
+Jeśli Twój kod jest na GitHub, Claude Code potrafi z nim pracować na wielu poziomach — od tworzenia commitów po automatyczne naprawianie błędów z CI/CD.
+
+## Git workflow z Claude — od zera
+
+Typowy przepływ pracy wygląda tak:
+
+\`\`\`
+1. Stwórz branch    →  "Stwórz branch feat/newsletter"
+2. Koduj z Claude   →  "Dodaj formularz newslettera"
+3. Commituj         →  "Commituj z opisem 'feat: add newsletter form'"
+4. Push             →  "Pushuj na GitHub"
+5. Stwórz PR        →  "Stwórz pull request"
+6. Code review      →  Ktoś (lub Claude) sprawdza
+7. Merge            →  "Zmerdżuj PR"
+\`\`\`
+
+Claude potrafi wykonać **każdy** z tych kroków. Ty mówisz co, Claude robi jak.
+
+## Pull Requesty (PR) — tworzenie
+
+**Pull Request** to prośba o dodanie Twoich zmian do głównej wersji kodu. To jak wysłanie dokumentu do akceptacji szefowi.
+
+### Tworzenie PR z Claude
+> "Stwórz pull request z opisem zmian. Tytuł: 'Dodanie formularza newslettera'"
+
+Claude:
+1. Sprawdza jakie zmiany są na branchu
+2. Tworzy PR z tytułem i opisem
+3. Listuje zmienione pliki
+4. Opisuje co i dlaczego zostało zmienione
+
+### Dobry opis PR — co powinien zawierać
+
+| Sekcja | Opis |
+|--------|------|
+| **Summary** | 2-3 zdania co zostało zrobione |
+| **Changes** | Lista konkretnych zmian |
+| **Test plan** | Jak sprawdzić czy działa |
+| **Screenshots** | Jeśli zmiana jest wizualna |
+
+Claude generuje to automatycznie na podstawie commitów.
+
+## Code Review z Claude
+
+Claude potrafi przeglądać kod — zarówno Twój, jak i cudzych PR-ów.
+
+### Przeglądanie własnych zmian
+> "Przejrzyj moje zmiany i powiedz czy widzisz jakieś problemy"
+
+Claude sprawdzi:
+- Błędy logiczne
+- Problemy z bezpieczeństwem (hardcoded secrets, brak walidacji)
+- Niezgodności z konwencjami projektu
+- Brakujące edge case'y
+
+### Przeglądanie cudzego PR
+> "Przejrzyj PR #42 na GitHub"
+
+Claude pobierze PR, przeczyta zmiany i da feedback.
+
+## CI/CD — automatyczne budowanie i testowanie
+
+**CI/CD** to automatyczny proces, który uruchamia się po pushu kodu:
+- **CI** (Continuous Integration) — automatycznie buduje i testuje kod
+- **CD** (Continuous Deployment) — automatycznie deployuje na serwer
+
+### Vercel + GitHub = automatyczny deploy
+Jeśli używasz Vercel, każdy push na GitHub automatycznie:
+1. Buduje Twój projekt
+2. Uruchamia testy (jeśli są skonfigurowane)
+3. Deployuje na preview URL (branch) lub produkcję (main)
+
+### Gdy CI/CD się nie powiedzie
+Czasem build na GitHub/Vercel nie przechodzi. Claude może pomóc:
+
+> "Build na Vercel nie przeszedł. Oto błąd: [wklej błąd]. Napraw to."
+
+Claude przeczyta błąd, znajdzie przyczynę i naprawi.
+
+## Auto-fix PR — Claude naprawia sam
+
+Jedna z najpotężniejszych funkcji: Claude może automatycznie naprawiać PR-y, które nie przeszły CI:
+
+1. CI wykrywa błąd w PR
+2. Claude dostaje powiadomienie
+3. Claude analizuje błąd
+4. Claude tworzy commit z poprawką
+5. CI uruchamia się ponownie
+
+To jak **pracownik QA**, który sam naprawia znalezione błędy.
+
+## Praktyczne komendy
+
+| Co chcesz zrobić | Co powiedzieć Claude'owi |
+|------------------|--------------------------|
+| Stworzyć branch | "Stwórz branch fix/login-bug" |
+| Commitnąć zmiany | "Commituj z opisem 'fix: resolve login redirect'" |
+| Pushnąć na GitHub | "Pushuj na origin" |
+| Stworzyć PR | "Stwórz PR do brancha main" |
+| Przejrzeć PR | "Przejrzyj PR #15" |
+| Naprawić błąd CI | "Build nie przeszedł, oto log: [wklej]. Napraw." |
+| Zmerdżować | "Zmerdżuj PR #15" |
+
+## Dobre praktyki
+
+1. **Jeden PR = jedna funkcja** — nie mieszaj wielu zmian w jednym PR
+2. **Descriptive branch names** — \`feat/newsletter\`, nie \`fix1\`
+3. **Commituj często** — małe commity łatwiej przeglądać
+4. **Zawsze review przed merge** — nawet jeśli sam piszesz kod
+5. **Nie pushuj na main bezpośrednio** — zawsze przez PR
+
+## Podsumowanie
+
+Claude Code integruje się z GitHub na każdym etapie: tworzenie branchy, commitów, PR-ów, code review i naprawianie błędów CI/CD. Używaj branchy i PR-ów zamiast pushowania na main. Claude automatycznie generuje opisy PR-ów i potrafi naprawiać błędy z CI.`,
+  },
+  {
+    id: "ca13",
+    path_id: "cc-action",
+    module_name: "Automatyzacja i integracja",
+    module_order: 4,
+    title: "/batch i praca równoległa",
+    slug: "batch-i-praca-rownolegla",
+    duration_minutes: 6,
+    order: 4,
+    content: `# /batch i praca równoległa
+
+## Problem: jedno zadanie na raz to za mało
+
+Standardowo rozmawiasz z Claude jak z jedną osobą — dajesz zadanie, czekasz, dajesz następne. Ale co jeśli masz **pięć niezależnych zadań**? Czekanie na każde po kolei to strata czasu.
+
+**Praca równoległa** pozwala uruchomić wiele instancji Claude'a jednocześnie.
+
+## Czym jest /batch?
+
+\`/batch\` to tryb, w którym dajesz Claude'owi **listę zadań**, a on wykonuje je jedno po drugim (lub kieruje do równoległych agentów). To jak danie listy zakupów zamiast mówienia "kup mleko... ok teraz kup chleb... ok teraz kup masło".
+
+### Przykład /batch
+> "Wykonaj te zadania:
+> 1. Napraw literówkę na stronie /o-nas — 'firam' powinno być 'firma'
+> 2. Zmień kolor footer z szarego na ciemnoniebieski
+> 3. Dodaj meta description do strony /kontakt
+> 4. Usuń nieużywany import w pliku Header.tsx"
+
+Claude wykona wszystkie cztery zadania w jednym przebiegu.
+
+## Równoległe agenty (parallel agents)
+
+Dla zaawansowanych: Claude Code pozwala uruchomić **kilka agentów jednocześnie**, każdy pracujący nad innym zadaniem.
+
+Jak to działa:
+\`\`\`
+Terminal 1: claude → "Dodaj stronę cennika"
+Terminal 2: claude → "Napraw formularz kontaktowy"
+Terminal 3: claude → "Zaktualizuj README"
+\`\`\`
+
+Trzy niezależne zadania — trzy instancje Claude — trzy wyniki naraz.
+
+### Kiedy to ma sens?
+
+| Sytuacja | Równoległa praca? | Dlaczego |
+|----------|-------------------|----------|
+| Zadania dotyczą **różnych plików** | Tak | Nie ma konfliktów |
+| Zadania dotyczą **tego samego pliku** | Nie | Mogą się nadpisać |
+| Zadania są od siebie **niezależne** | Tak | Nie czekają na siebie |
+| Jedno zadanie **zależy od drugiego** | Nie | Trzeba sekwencyjnie |
+
+## Worktrees — każdy agent w swoim "świecie"
+
+**Git worktree** to technika, która tworzy osobną kopię projektu dla każdego agenta. Dzięki temu agenty nie wchodzą sobie w drogę.
+
+Analogia: zamiast dwóch kucharzy w jednej kuchni (ryzyko kolizji), każdy dostaje **własną kuchnię** z kopią składników.
+
+Jak to uruchomić:
+\`\`\`bash
+git worktree add ../moj-projekt-feature1 feat/feature1
+cd ../moj-projekt-feature1
+claude
+\`\`\`
+
+Teraz Claude pracuje na osobnej kopii projektu. Gdy skończy, mergujesz zmiany do głównego brancha.
+
+## Praktyczny scenariusz: rebranding
+
+Masz 4 zadania rebrandingowe. Zamiast robić je sekwencyjnie (40 minut), uruchamiasz równolegle (10 minut):
+
+| Agent | Zadanie | Pliki |
+|-------|---------|-------|
+| Agent 1 | Zmień logo i kolory w nagłówku | Header.tsx, globals.css |
+| Agent 2 | Zaktualizuj stronę "O nas" | about/page.tsx |
+| Agent 3 | Zmień stopkę i dane kontaktowe | Footer.tsx |
+| Agent 4 | Zaktualizuj meta tagi i SEO | layout.tsx, sitemap.ts |
+
+Każdy agent pracuje na swoich plikach — zero konfliktów, czterokrotne przyspieszenie.
+
+## Ograniczenia i pułapki
+
+### 1. Nie wszystko nadaje się do równoległości
+Jeśli zadanie B zależy od wyniku zadania A — musisz je robić sekwencyjnie.
+
+### 2. Konflikty plików
+Dwa agenty edytujące ten sam plik = problemy. Planuj podział tak, żeby pliki się nie pokrywały.
+
+### 3. Koszt
+Każda równoległa instancja Claude zużywa tokeny. 4 agenty = 4x koszt. Używaj mądrze.
+
+### 4. Merge na końcu
+Po pracy równoległej musisz **scalić** zmiany. Jeśli korzystasz z worktrees i branchy, git pomoże:
+> "Zmerdżuj branch feat/new-header do main"
+
+## Kiedy używać czego?
+
+| Podejście | Kiedy | Oszczędność czasu |
+|-----------|-------|-------------------|
+| **Sekwencyjnie** (jedno po drugim) | Zadania zależne od siebie | Brak — ale bezpieczne |
+| **/batch** (lista zadań) | Proste, niezależne zadania | Umiarkowana |
+| **Równoległe agenty** | Duże, niezależne zadania | Duża (2-4x szybciej) |
+| **Worktrees** | Złożone zadania wymagające izolacji | Duża + bezpieczne |
+
+## Podsumowanie
+
+/batch pozwala zlecić listę zadań naraz. Równoległe agenty przyspieszają pracę 2-4 razy. Worktrees izolują agentów, eliminując konflikty. Kluczowa zasada: równolegle tylko zadania niezależne, dotyczące różnych plików.`,
+  },
 ];
