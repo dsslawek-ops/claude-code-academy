@@ -3,22 +3,9 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { categories } from "@/data/categories";
 import {
-  BookOpen,
-  Brain,
-  Code,
-  GitBranch,
-  GraduationCap,
-  Keyboard,
-  LifeBuoy,
-  Plug,
-  Rocket,
-  Search,
-  Settings,
-  Terminal,
-  Users,
-  Webhook,
-  Wrench,
-  Zap,
+  BookOpen, Brain, Code, GitBranch, GraduationCap, Keyboard,
+  LifeBuoy, Plug, Rocket, Search, Settings, Terminal,
+  Users, Webhook, Wrench, Zap,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -31,20 +18,16 @@ export default function HomePage() {
   return (
     <AppShell>
       {/* Hero */}
-      <div className="mb-12 animate-fade-in">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-          Platforma szkoleniowa Claude Code
-        </div>
-        <h1 className="mb-3 text-4xl font-bold tracking-tight sm:text-5xl">
-          Opanuj{" "}
-          <span className="bg-gradient-to-r from-primary to-[oklch(0.627_0.265_303.9)] bg-clip-text text-transparent">
-            Claude Code
-          </span>
+      <div className="mb-16 pt-4">
+        <p className="mb-3 text-[13px] font-medium tracking-wide text-muted-foreground uppercase">
+          Platforma szkoleniowa
+        </p>
+        <h1 className="mb-4 text-[2rem] font-semibold leading-tight tracking-tight sm:text-[2.5rem]">
+          Opanuj Claude Code
         </h1>
-        <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
-          Wszystko w jednym miejscu — po polsku, krok po kroku, dla
-          nie-programistów. Szkolenia, ściągawki i AI troubleshooter.
+        <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">
+          Wszystko w jednym miejscu — po polsku, krok po kroku.
+          Szkolenia, ściągawki i AI troubleshooter.
         </p>
       </div>
 
@@ -55,83 +38,71 @@ export default function HomePage() {
             new KeyboardEvent("keydown", { key: "k", metaKey: true })
           )
         }
-        className="card-interactive press-effect mb-12 flex w-full items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 text-left text-muted-foreground animate-fade-in animation-delay-100"
+        className="mb-16 flex w-full items-center gap-3 rounded-lg border border-border px-4 py-3 text-left text-[13px] text-muted-foreground transition-colors hover:border-muted-foreground/25"
       >
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-          <Search className="h-4 w-4 text-primary" />
-        </div>
-        <span className="flex-1 text-sm">
-          Szukaj artykułu, komendy, narzędzia...
-        </span>
-        <kbd className="hidden items-center gap-0.5 rounded-md border border-border bg-muted px-2 py-1 text-xs font-medium text-muted-foreground sm:flex">
-          <span className="text-sm">⌘</span>K
-        </kbd>
+        <Search className="h-4 w-4" />
+        <span className="flex-1">Szukaj...</span>
+        <kbd className="hidden text-[11px] text-muted-foreground sm:inline">⌘K</kbd>
       </button>
 
       {/* Quick Links */}
-      <div className="mb-14 grid gap-4 sm:grid-cols-3 animate-fade-in animation-delay-200">
+      <div className="mb-16 grid gap-px overflow-hidden rounded-lg border border-border sm:grid-cols-3">
         <Link
           href="/szkolenia"
-          className="card-interactive press-effect group rounded-xl border border-border bg-card p-5"
+          className="flex flex-col gap-2 bg-card p-5 transition-colors hover:bg-accent"
         >
-          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-200 group-hover:scale-110">
-            <GraduationCap className="h-5 w-5 text-primary" />
-          </div>
-          <h3 className="mb-1 text-sm font-semibold">Zacznij szkolenie</h3>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Ścieżki krok po kroku od podstaw do zaawansowanych
+          <GraduationCap className="h-4 w-4 text-muted-foreground" />
+          <p className="text-[13px] font-medium">Szkolenia</p>
+          <p className="text-[12px] leading-relaxed text-muted-foreground">
+            Ścieżki krok po kroku
           </p>
         </Link>
         <Link
           href="/sciagawka"
-          className="card-interactive press-effect group rounded-xl border border-border bg-card p-5"
+          className="flex flex-col gap-2 border-t border-border bg-card p-5 transition-colors hover:bg-accent sm:border-l sm:border-t-0"
         >
-          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-200 group-hover:scale-110">
-            <Keyboard className="h-5 w-5 text-primary" />
-          </div>
-          <h3 className="mb-1 text-sm font-semibold">Ściągawka</h3>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Skróty, komendy i narzędzia w jednym miejscu
+          <Keyboard className="h-4 w-4 text-muted-foreground" />
+          <p className="text-[13px] font-medium">Ściągawka</p>
+          <p className="text-[12px] leading-relaxed text-muted-foreground">
+            Skróty, komendy, narzędzia
           </p>
         </Link>
         <Link
           href="/troubleshooter"
-          className="card-interactive press-effect group rounded-xl border border-border bg-card p-5"
+          className="flex flex-col gap-2 border-t border-border bg-card p-5 transition-colors hover:bg-accent sm:border-l sm:border-t-0"
         >
-          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 transition-transform duration-200 group-hover:scale-110">
-            <LifeBuoy className="h-5 w-5 text-primary" />
-          </div>
-          <h3 className="mb-1 text-sm font-semibold">Mam problem</h3>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Opisz problem — AI znajdzie rozwiązanie
+          <LifeBuoy className="h-4 w-4 text-muted-foreground" />
+          <p className="text-[13px] font-medium">Rozwiąż problem</p>
+          <p className="text-[12px] leading-relaxed text-muted-foreground">
+            AI znajdzie odpowiedź
           </p>
         </Link>
       </div>
 
       {/* Categories */}
-      <div className="animate-fade-in animation-delay-300">
-        <h2 className="mb-1 text-lg font-semibold tracking-tight">
+      <div>
+        <p className="mb-6 text-[13px] font-medium tracking-wide text-muted-foreground uppercase">
           Baza wiedzy
-        </h2>
-        <p className="mb-5 text-sm text-muted-foreground">
-          Przeglądaj artykuły po kategoriach
         </p>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="space-y-px">
           {categories.map((cat) => {
             const Icon = iconMap[cat.icon] || BookOpen;
             return (
               <Link
                 key={cat.id}
                 href={`/baza-wiedzy/${cat.slug}`}
-                className="group flex items-center gap-3 rounded-lg border border-transparent bg-card/50 px-4 py-3 transition-all duration-150 hover:border-border hover:bg-card"
+                className="group flex items-center gap-4 rounded-md px-3 py-3 transition-colors hover:bg-accent"
               >
-                <Icon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-                <div className="min-w-0">
-                  <h3 className="text-[13px] font-medium">{cat.name}</h3>
-                  <p className="truncate text-[11px] text-muted-foreground">
+                <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-medium">{cat.name}</p>
+                  <p className="truncate text-[12px] text-muted-foreground">
                     {cat.description}
                   </p>
                 </div>
+                <span className="text-[12px] text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                  →
+                </span>
               </Link>
             );
           })}
