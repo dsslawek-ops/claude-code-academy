@@ -1,0 +1,88 @@
+import { Tool } from "@/types/database";
+
+export const tools: Tool[] = [
+  {
+    id: "t1",
+    name: "Read",
+    description: "Czyta pliki z dysku — kod, obrazy, PDF-y, notebooki Jupyter. Pokazuje zawartość z numerami linii.",
+    when_to_use: "Gdy chcesz, żeby Claude zobaczył zawartość pliku. Zamiast cat/head/tail.",
+    example: "Przeczytaj plik src/app/page.tsx",
+  },
+  {
+    id: "t2",
+    name: "Edit",
+    description: "Precyzyjna edycja pliku — podmiana fragmentu tekstu. Wysyła tylko różnicę, nie cały plik.",
+    when_to_use: "Przy modyfikacji istniejących plików. Zamiast sed/awk. Bezpieczniejsze niż Write bo zmienia tylko wybrany fragment.",
+    example: "Zmień nazwę funkcji z handleClick na handleSubmit",
+  },
+  {
+    id: "t3",
+    name: "Write",
+    description: "Tworzy nowy plik lub nadpisuje istniejący w całości. Claude musi najpierw przeczytać plik (Read) przed nadpisaniem.",
+    when_to_use: "Tworzenie nowych plików. Dla istniejących plików lepiej użyj Edit.",
+    example: "Utwórz nowy komponent Button w src/components/Button.tsx",
+  },
+  {
+    id: "t4",
+    name: "Bash",
+    description: "Uruchamia komendy w terminalu — npm, git, dowolne programy. Wymaga zatwierdzenia (chyba że dozwolone w permissions).",
+    when_to_use: "Instalacja paczek, uruchamianie buildów, git operacje, testowanie. Wszystko co wymaga terminala.",
+    example: "npm run build, git status, npx prisma migrate",
+  },
+  {
+    id: "t5",
+    name: "Grep",
+    description: "Przeszukuje zawartość plików — regex, filtrowanie po typie pliku, kontekst wokół trafień.",
+    when_to_use: "Szukanie tekstu w kodzie — nazw funkcji, importów, stringów. Zamiast grep/rg w terminalu.",
+    example: "Znajdź wszystkie miejsca gdzie używamy useState",
+  },
+  {
+    id: "t6",
+    name: "Glob",
+    description: "Wyszukuje pliki po wzorcu nazwy — np. **/*.tsx, src/**/*.test.ts.",
+    when_to_use: "Szukanie plików po nazwie lub rozszerzeniu. Zamiast find/ls.",
+    example: "Znajdź wszystkie pliki TypeScript w katalogu src",
+  },
+  {
+    id: "t7",
+    name: "Agent",
+    description: "Uruchamia sub-agenta — wyspecjalizowanego asystenta do konkretnego zadania. Typy: Explore (czytanie kodu), Plan (planowanie), general-purpose (wszystko).",
+    when_to_use: "Złożone zadania wymagające głębokiego researchu, równoległe przeszukiwanie kodu, izolacja kontekstu.",
+    example: "Zbadaj jak działa autentykacja w tym projekcie",
+  },
+  {
+    id: "t8",
+    name: "WebSearch",
+    description: "Wyszukuje w internecie — aktualne informacje, dokumentacja, artykuły.",
+    when_to_use: "Gdy potrzebujesz aktualnych informacji spoza projektu — nowe wersje bibliotek, dokumentacja, rozwiązania błędów.",
+    example: "Sprawdź najnowszą wersję Next.js",
+  },
+  {
+    id: "t9",
+    name: "WebFetch",
+    description: "Pobiera i parsuje zawartość strony internetowej.",
+    when_to_use: "Czytanie konkretnej strony — dokumentacji, API reference, artykułu.",
+    example: "Pobierz dokumentację Supabase Auth",
+  },
+  {
+    id: "t10",
+    name: "Monitor",
+    description: "Obserwuje procesy działające w tle i reaguje na ich output.",
+    when_to_use: "Monitorowanie długotrwałych procesów — dev server, build, testy.",
+    example: "Obserwuj output dev servera",
+  },
+  {
+    id: "t11",
+    name: "Task",
+    description: "Tworzy i zarządza listą zadań — tworzenie, aktualizacja statusu, śledzenie postępu.",
+    when_to_use: "Złożone, wieloetapowe zadania. Organizacja pracy, śledzenie co zrobione a co zostało.",
+    example: "Utwórz listę zadań do refaktoringu auth",
+  },
+  {
+    id: "t12",
+    name: "AskUserQuestion",
+    description: "Zadaje pytanie użytkownikowi — z opcjami wyboru lub otwarte.",
+    when_to_use: "Gdy Claude potrzebuje Twojej decyzji — wybór podejścia, potwierdzenie zmiany, doprecyzowanie wymagań.",
+    example: "Czy preferujesz Tailwind czy CSS modules?",
+  },
+];
