@@ -8,11 +8,14 @@ import {
   Home,
   Keyboard,
   LifeBuoy,
+  LogOut,
   Newspaper,
   Search,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "Start", icon: Home },
@@ -25,6 +28,14 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside className="fixed left-0 top-0 z-40 hidden h-full w-64 border-r border-border bg-card lg:block">
@@ -78,6 +89,13 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="border-t border-border px-4 py-3">
+          <button
+            onClick={handleLogout}
+            className="mb-2 flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            <LogOut className="h-4 w-4" />
+            Wyloguj się
+          </button>
           <p className="text-xs text-muted-foreground">
             Dane aktualne na kwiecień 2026
           </p>

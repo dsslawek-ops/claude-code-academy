@@ -29,18 +29,20 @@ export default function TroubleshooterPage() {
   const handleAsk = async () => {
     if (!problem.trim()) return;
     setLoading(true);
-    // For now — static response. AI integration will come in Phase 2.
-    setTimeout(() => {
-      setAnswer(
-        `Na ten moment Troubleshooter AI jest w budowie (Faza 2). W międzyczasie:\n\n` +
-        `1. Sprawdź bazę wiedzy — może znajdziesz odpowiedź w artykułach\n` +
-        `2. Wpisz /doctor w Claude Code — diagnostyka instalacji\n` +
-        `3. Wpisz /help — lista dostępnych komend\n\n` +
-        `Twoje pytanie: "${problem}"\n\n` +
-        `Wkrótce AI będzie odpowiadał bezpośrednio na Twoje pytania!`
-      );
+    setAnswer("");
+    try {
+      const res = await fetch("/api/troubleshooter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: problem }),
+      });
+      const data = await res.json();
+      setAnswer(data.answer || "Nie udało się uzyskać odpowiedzi.");
+    } catch {
+      setAnswer("Błąd połączenia. Spróbuj ponownie.");
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
