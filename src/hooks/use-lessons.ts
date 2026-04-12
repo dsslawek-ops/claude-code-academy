@@ -22,15 +22,12 @@ interface ModuleGroup {
   lessons: LessonData[];
 }
 
-// Dynamic import of lessons data to avoid build issues if file doesn't exist yet
-let lessonsData: LessonData[] = [];
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mod = require("@/data/lessons");
-  lessonsData = mod.lessons || [];
-} catch {
-  lessonsData = [];
-}
+import { lessons as entrepreneurLessons } from "@/data/lessons";
+import { lessonsCC101 } from "@/data/lessons-cc101";
+import { lessonsCCAction } from "@/data/lessons-cc-action";
+
+// Combine all lesson sources
+const lessonsData = [...entrepreneurLessons, ...lessonsCC101, ...lessonsCCAction] as unknown as LessonData[];
 
 export function useLessons(pathId: string) {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
