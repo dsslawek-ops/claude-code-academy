@@ -76,6 +76,7 @@ export function CommandPalette() {
                 { label: "Strona główna", href: "/" },
                 { label: "Baza wiedzy", href: "/baza-wiedzy" },
                 { label: "Szkolenia", href: "/szkolenia" },
+                { label: "Kursy Anthropic", href: "/kursy-anthropic" },
                 { label: "Ściągawka", href: "/sciagawka" },
                 { label: "Rozwiąż problem", href: "/troubleshooter" },
                 { label: "Co nowego", href: "/co-nowego" },
