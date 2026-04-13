@@ -1,84 +1,166 @@
+"use client";
+
+import { useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper, RefreshCw, Sparkles, Wrench, Bug } from "lucide-react";
+import { Loader2, RefreshCw, Sparkles, Wrench, Bug } from "lucide-react";
 
-const changelogEntries = [
+interface ChangelogEntry {
+  date: string;
+  title: string;
+  summary: string;
+  type: "feature" | "change" | "fix";
+}
+
+const staticEntries: ChangelogEntry[] = [
+  {
+    date: "2026-04-13",
+    title: "RAG Troubleshooter, fuzzy search, certyfikaty",
+    summary: "AI Troubleshooter teraz przeszukuje całą bazę wiedzy (RAG). Cmd+K używa fuzzy search (fuse.js). Certyfikat ukończenia ścieżki do pobrania jako PNG.",
+    type: "feature",
+  },
   {
     date: "2026-04-12",
     title: "Claude Code Academy uruchomiona!",
-    summary: "Pierwsza wersja platformy szkoleniowej z bazą wiedzy, ściągawką i troubleshootera.",
-    type: "feature" as const,
+    summary: "Pierwsza wersja platformy szkoleniowej z bazą wiedzy, ściągawką, szkoleniami i troubleshootera.",
+    type: "feature",
   },
   {
     date: "2026-04-10",
     title: "Claude Opus 4.6 z kontekstem 1M tokenów",
     summary: "Najnowszy model Claude Opus 4.6 oferuje okno kontekstu do 1 miliona tokenów. Dostępny w Claude Code przez /model claude-opus-4-6.",
-    type: "feature" as const,
+    type: "feature",
   },
   {
     date: "2026-04-08",
     title: "Fast Mode — 2.5x szybsze odpowiedzi",
-    summary: "Nowy tryb /fast przyspiesza Opus 4.6 o 2.5x. Wyższy koszt tokenów, ale drastycznie szybsze odpowiedzi. Research preview.",
-    type: "feature" as const,
+    summary: "Nowy tryb /fast przyspiesza Opus 4.6 o 2.5x. Wyższy koszt tokenów, ale drastycznie szybsze odpowiedzi.",
+    type: "feature",
   },
   {
     date: "2026-04-05",
     title: "Desktop App — Cowork i App Preview",
-    summary: "Aplikacja desktopowa zyskała tryb Cowork (autonomiczny agent w chmurze) i podgląd uruchomionej aplikacji bezpośrednio w panelu.",
-    type: "feature" as const,
+    summary: "Aplikacja desktopowa zyskała tryb Cowork (autonomiczny agent w chmurze) i podgląd uruchomionej aplikacji.",
+    type: "feature",
   },
   {
     date: "2026-04-02",
     title: "Plugins — nowy ekosystem rozszerzeń",
     summary: "System pluginów pozwala instalować rozszerzenia z marketplace: frontend-design, stripe, supabase, figma i inne.",
-    type: "feature" as const,
+    type: "feature",
   },
   {
     date: "2026-03-28",
-    title: "Auto Mode — automatyczne uprawnienia z kontrolą bezpieczeństwa",
+    title: "Auto Mode — automatyczne uprawnienia",
     summary: "Nowy tryb uprawnień 'auto' eliminuje większość promptów o zgodę, z wbudowaną weryfikacją bezpieczeństwa.",
-    type: "change" as const,
-  },
-  {
-    date: "2026-03-25",
-    title: "/batch — równoległe zmiany w wielu plikach",
-    summary: "Nowa komenda /batch uruchamia 5-30 agentów równolegle do zmian na dużą skalę (refactoring, migracje).",
-    type: "feature" as const,
+    type: "change",
   },
 ];
 
 const typeConfig = {
-  feature: { label: "Nowa funkcja", icon: Sparkles, color: "bg-green-500/10 text-green-400 border-green-500/20" },
-  change: { label: "Zmiana", icon: Wrench, color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
-  fix: { label: "Poprawka", icon: Bug, color: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+  feature: {
+    label: "Nowa funkcja",
+    icon: Sparkles,
+    color: "bg-green-500/10 text-green-400 border-green-500/20",
+  },
+  change: {
+    label: "Zmiana",
+    icon: Wrench,
+    color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+  },
+  fix: {
+    label: "Poprawka",
+    icon: Bug,
+    color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  },
 };
 
 export default function ChangelogPage() {
+  const [liveEntries, setLiveEntries] = useState<ChangelogEntry[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [lastFetched, setLastFetched] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchChangelog = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/changelog", { method: "POST" });
+      const data = await res.json();
+      if (data.entries && data.entries.length > 0) {
+        setLiveEntries(data.entries);
+        setLastFetched(
+          new Date().toLocaleString("pl-PL", {
+            day: "numeric",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        );
+      } else if (data.error) {
+        setError(data.error);
+      } else {
+        setError("Nie znaleziono nowych zmian");
+      }
+    } catch {
+      setError("Błąd połączenia");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const allEntries = liveEntries.length > 0 ? liveEntries : staticEntries;
+
   return (
     <AppShell>
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="mb-2 text-3xl font-bold tracking-tight">Co nowego</h1>
-          <p className="text-muted-foreground">
-            Najnowsze zmiany i aktualizacje w Claude Code.
-          </p>
+      <div className="mb-10">
+        <p className="mb-3 text-xs font-medium tracking-wide uppercase text-muted-foreground">
+          Changelog
+        </p>
+        <h1 className="mb-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+          Co nowego w Claude Code
+        </h1>
+        <p className="mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
+          Aktualizacje Claude Code i naszej platformy.
+        </p>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchChangelog}
+            disabled={loading}
+            className="flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs transition-colors hover:bg-accent disabled:opacity-50"
+          >
+            {loading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="h-3.5 w-3.5" />
+            )}
+            Sprawdź aktualizacje
+          </button>
+          {lastFetched && (
+            <span className="text-xs text-muted-foreground">
+              Ostatnio: {lastFetched}
+            </span>
+          )}
+          {error && (
+            <span className="text-xs text-destructive">{error}</span>
+          )}
         </div>
-        <button
-          className="flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm transition-colors hover:bg-accent"
-          title="Sprawdź aktualizacje (Faza 3)"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Sprawdź
-        </button>
+
+        {liveEntries.length > 0 && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Pobrano {liveEntries.length} wpisów z oficjalnego changelog Anthropic
+          </p>
+        )}
       </div>
 
-      <div className="space-y-4">
-        {changelogEntries.map((entry, i) => {
-          const config = typeConfig[entry.type];
+      <div className="space-y-3">
+        {allEntries.map((entry, i) => {
+          const config = typeConfig[entry.type] || typeConfig.feature;
           return (
             <div
-              key={i}
-              className="rounded-lg border border-border bg-card p-5"
+              key={`${entry.date}-${i}`}
+              className="rounded-lg border border-border p-4"
             >
               <div className="mb-2 flex flex-wrap items-center gap-2">
                 <Badge variant="outline" className={config.color}>
@@ -89,20 +171,13 @@ export default function ChangelogPage() {
                   {entry.date}
                 </span>
               </div>
-              <h3 className="mb-1 font-semibold">{entry.title}</h3>
-              <p className="text-sm text-muted-foreground">{entry.summary}</p>
+              <h3 className="mb-1 text-sm font-medium">{entry.title}</h3>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {entry.summary}
+              </p>
             </div>
           );
         })}
-      </div>
-
-      <div className="mt-8 rounded-lg border border-dashed border-border p-6 text-center">
-        <Newspaper className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
-          Automatyczne sprawdzanie aktualizacji będzie dostępne w Fazie 3.
-          <br />
-          Na razie wpisy dodawane są ręcznie.
-        </p>
       </div>
     </AppShell>
   );
