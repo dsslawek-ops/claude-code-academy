@@ -29,7 +29,8 @@ const learningPaths = [
     id: "assistant",
     title: "Asystent / Pracownik",
     description: "Codzienne zadania z Claude Code — edycja, Git, wyszukiwanie.",
-    status: "available" as const,
+    badge: "Wkrótce",
+    status: "coming-soon" as const,
   },
 ];
 
@@ -37,13 +38,13 @@ export default function TrainingPage() {
   return (
     <AppShell>
       <div className="mb-12">
-        <p className="mb-3 text-[13px] font-medium tracking-wide uppercase text-muted-foreground">
+        <p className="mb-3 text-xs font-medium tracking-wide uppercase text-muted-foreground">
           Szkolenia
         </p>
-        <h1 className="mb-4 text-[2rem] font-semibold leading-tight tracking-tight">
+        <h1 className="mb-4 text-3xl font-semibold leading-tight tracking-tight">
           Ścieżki szkoleniowe
         </h1>
-        <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">
+        <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
           Wybierz ścieżkę dopasowaną do siebie. Wszystko po polsku, krok po kroku.
         </p>
       </div>
@@ -54,6 +55,25 @@ export default function TrainingPage() {
           const totalMinutes = pathLessons.reduce((s, l) => s + l.duration_minutes, 0);
           const moduleNames = [...new Set(pathLessons.map((l) => l.module_name))];
 
+          if (path.status === "coming-soon") {
+            return (
+              <div
+                key={path.id}
+                className="flex items-start justify-between rounded-lg border border-dashed border-border p-5 opacity-60"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-medium">{path.title}</h2>
+                    <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                      Wkrótce
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{path.description}</p>
+                </div>
+              </div>
+            );
+          }
+
           return (
             <Link
               key={path.id}
@@ -62,23 +82,23 @@ export default function TrainingPage() {
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-[15px] font-medium">{path.title}</h2>
+                  <h2 className="text-sm font-medium">{path.title}</h2>
                   {path.badge && (
-                    <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                    <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                       {path.badge}
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-[13px] text-muted-foreground">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {path.description}
                 </p>
                 {pathLessons.length > 0 && (
-                  <p className="mt-2 text-[12px] text-muted-foreground">
+                  <p className="mt-2 text-xs text-muted-foreground">
                     {moduleNames.length} moduły · {pathLessons.length} lekcji · ~{Math.round(totalMinutes / 60 * 10) / 10} godz.
                   </p>
                 )}
               </div>
-              <span className="mt-1 text-[13px] text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="mt-1 text-xs text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
                 →
               </span>
             </Link>

@@ -34,13 +34,13 @@ export default function OfficialCoursesPage() {
   return (
     <AppShell>
       <div className="mb-12">
-        <p className="mb-3 text-[13px] font-medium tracking-wide uppercase text-muted-foreground">
+        <p className="mb-3 text-xs font-medium tracking-wide uppercase text-muted-foreground">
           Oficjalne materiały
         </p>
-        <h1 className="mb-4 text-[2rem] font-semibold leading-tight tracking-tight">
+        <h1 className="mb-4 text-3xl font-semibold leading-tight tracking-tight">
           Kursy Anthropic
         </h1>
-        <p className="max-w-lg text-[15px] leading-relaxed text-muted-foreground">
+        <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
           Oficjalne szkolenia od twórców Claude. Dwa kluczowe kursy dostępne
           po polsku na naszej platformie. Reszta z linkami do oryginałów.
         </p>
@@ -48,7 +48,7 @@ export default function OfficialCoursesPage() {
 
       {grouped.map((group) => (
         <div key={group.key} className="mb-12">
-          <p className="mb-4 text-[13px] font-medium tracking-wide uppercase text-muted-foreground">
+          <p className="mb-4 text-xs font-medium tracking-wide uppercase text-muted-foreground">
             {group.label}
           </p>
           <div className="space-y-2">
@@ -60,34 +60,34 @@ export default function OfficialCoursesPage() {
                 <div className="group flex items-start justify-between rounded-lg border border-border p-5 transition-colors hover:bg-accent">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-[15px] font-medium">
+                      <h3 className="text-sm font-medium">
                         {course.titlePl}
                       </h3>
                       {isLocal ? (
-                        <span className="rounded bg-foreground/10 px-2 py-0.5 text-[10px] font-medium text-foreground">
+                        <span className="rounded bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground">
                           Po polsku
                         </span>
                       ) : (
                         <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                       )}
                     </div>
-                    <p className="mt-0.5 text-[12px] text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {course.title} · {levelLabels[course.level]}
                     </p>
-                    <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                       {course.description}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {course.topics.slice(0, 6).map((topic) => (
                         <span
                           key={topic}
-                          className="rounded bg-muted px-2 py-0.5 text-[11px] text-muted-foreground"
+                          className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground"
                         >
                           {topic}
                         </span>
                       ))}
                       {course.topics.length > 6 && (
-                        <span className="text-[11px] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           +{course.topics.length - 6}
                         </span>
                       )}
@@ -120,7 +120,7 @@ export default function OfficialCoursesPage() {
       ))}
 
       <div className="rounded-lg border border-dashed border-border p-6 text-center">
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           Kursy oznaczone "Po polsku" są dostępne bezpośrednio na naszej platformie.
           Pozostałe prowadzone po angielsku na{" "}
           <a

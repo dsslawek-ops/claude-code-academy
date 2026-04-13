@@ -40,10 +40,10 @@ export function CommandPalette() {
   if (!open) return null;
 
   const groupHeadingClass =
-    "[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground";
+    "[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-muted-foreground";
 
   const itemClass =
-    "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[13px] text-muted-foreground aria-selected:bg-accent aria-selected:text-foreground";
+    "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-xs text-muted-foreground aria-selected:bg-accent aria-selected:text-foreground";
 
   return (
     <>
@@ -61,13 +61,13 @@ export function CommandPalette() {
             <Search className="h-3.5 w-3.5 text-muted-foreground" />
             <Command.Input
               placeholder="Szukaj..."
-              className="h-11 w-full bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
+              className="h-11 w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
               autoFocus
             />
           </div>
 
           <Command.List className="max-h-[320px] overflow-y-auto p-1.5">
-            <Command.Empty className="py-8 text-center text-[13px] text-muted-foreground">
+            <Command.Empty className="py-8 text-center text-xs text-muted-foreground">
               Brak wyników
             </Command.Empty>
 
@@ -114,7 +114,7 @@ export function CommandPalette() {
                   onSelect={() => go("/sciagawka")}
                   className={itemClass}
                 >
-                  <code className="shrink-0 text-[12px] font-mono">
+                  <code className="shrink-0 text-xs font-mono">
                     {c.command}
                   </code>
                   <span className="truncate">{c.description}</span>
@@ -130,7 +130,7 @@ export function CommandPalette() {
                   onSelect={() => go("/sciagawka")}
                   className={itemClass}
                 >
-                  <code className="shrink-0 text-[12px] font-mono font-semibold">
+                  <code className="shrink-0 text-xs font-mono font-semibold">
                     {t.name}
                   </code>
                   <span className="truncate">{t.description}</span>
@@ -139,7 +139,7 @@ export function CommandPalette() {
             </Command.Group>
           </Command.List>
 
-          <div className="border-t border-border px-4 py-2 text-[11px] text-muted-foreground/60">
+          <div className="border-t border-border px-4 py-2 text-xs text-muted-foreground/60">
             ↑↓ nawiguj · ↵ otwórz · esc zamknij
           </div>
         </Command>

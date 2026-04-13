@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { markdownToHtml } from "@/lib/markdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock } from "lucide-react";
@@ -41,26 +42,7 @@ export default function LessonPage() {
     );
   }
 
-  // Simple markdown to HTML (reuse from article page)
-  const html = lesson.content
-    .replace(/```(\w*)\n([\s\S]*?)```/g, (_m: string, lang: string, code: string) =>
-      `<pre class="rounded-lg bg-muted p-4 overflow-x-auto text-sm font-mono my-4"><code class="language-${lang}">${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`
-    )
-    .replace(/\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)*)/g, (_m: string, header: string, body: string) => {
-      const headers = header.split("|").map((h: string) => h.trim()).filter(Boolean);
-      const rows = body.trim().split("\n").map((row: string) =>
-        row.split("|").map((c: string) => c.trim()).filter(Boolean)
-      );
-      return `<div class="overflow-x-auto my-4"><table class="w-full text-sm border-collapse"><thead><tr>${headers.map((h: string) => `<th class="border border-border px-3 py-2 text-left font-medium bg-muted">${h}</th>`).join("")}</tr></thead><tbody>${rows.map((row: string[]) => `<tr>${row.map((c: string) => `<td class="border border-border px-3 py-2">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
-    })
-    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold mt-6 mb-2">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold mt-8 mb-3">$1</h2>')
-    .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc text-sm leading-relaxed">$1</li>')
-    .replace(/^(?!<|$|\s*$)(.+)$/gm, '<p class="text-sm leading-relaxed mb-3">$1</p>')
-    .replace(/`([^`]+)`/g, '<code class="rounded bg-muted px-1.5 py-0.5 text-xs font-mono">$1</code>')
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/^> (.+)$/gm, '<blockquote class="border-l-2 border-primary pl-4 my-3 text-sm text-muted-foreground italic">$1</blockquote>')
-    .replace(/((?:<li[^>]*>.*<\/li>\n?)+)/g, '<ul class="my-3 space-y-1">$1</ul>');
+  const html = markdownToHtml(lesson.content);
 
   return (
     <AppShell>

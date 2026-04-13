@@ -6,6 +6,7 @@ import { LogOut, Search, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItems } from "@/lib/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -24,7 +25,7 @@ export function Sidebar() {
         {/* Logo */}
         <div className="flex h-14 items-center gap-2.5 px-5">
           <Sparkles className="h-4 w-4 text-muted-foreground" />
-          <span className="text-[13px] font-semibold tracking-tight">
+          <span className="text-xs font-semibold tracking-tight">
             Claude Code Academy
           </span>
         </div>
@@ -58,7 +59,7 @@ export function Sidebar() {
                   href={item.href}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
+                    "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-xs transition-colors",
                     isActive
                       ? "font-medium text-foreground"
                       : "text-muted-foreground hover:text-foreground"
@@ -73,10 +74,11 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-border px-3 py-3">
+        <div className="border-t border-border px-3 py-3 space-y-0.5">
+          <ThemeToggle />
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+            className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             <LogOut className="h-3.5 w-3.5" />
             Wyloguj
