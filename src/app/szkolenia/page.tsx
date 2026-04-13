@@ -4,7 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { lessons } from "@/data/lessons";
 import Link from "next/link";
 
-const learningPaths = [
+const learningPaths: { id: string; title: string; description: string; badge?: string; status: "available" | "coming-soon" }[] = [
   {
     id: "entrepreneur",
     title: "Przedsiębiorca",
@@ -29,8 +29,7 @@ const learningPaths = [
     id: "assistant",
     title: "Asystent / Pracownik",
     description: "Codzienne zadania z Claude Code — edycja, Git, wyszukiwanie.",
-    badge: "Wkrótce",
-    status: "coming-soon" as const,
+    status: "available" as const,
   },
 ];
 

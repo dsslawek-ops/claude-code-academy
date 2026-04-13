@@ -24,9 +24,10 @@ interface ModuleGroup {
 
 import { lessons as allLessons } from "@/data/lessons";
 import { lessonsCC101 } from "@/data/lessons-cc101";
+import { lessonsAssistant } from "@/data/lessons-assistant";
 
-// Combine all lesson sources (lessons.ts has entrepreneur + cc-action from agent)
-const lessonsData = [...allLessons, ...lessonsCC101] as unknown as LessonData[];
+// Combine all lesson sources
+const lessonsData = [...allLessons, ...lessonsCC101, ...lessonsAssistant] as unknown as LessonData[];
 
 export function useLessons(pathId: string) {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
