@@ -76,6 +76,24 @@ export default function LearningPathPage() {
           </div>
         ))}
       </div>
+
+      {/* Certificate link */}
+      {totalCount > 0 && (
+        <div className="mt-10 rounded-lg border border-dashed border-border p-5 text-center">
+          {completedCount === totalCount ? (
+            <Link
+              href={`/szkolenia/${pathId}/certyfikat`}
+              className="inline-flex items-center gap-2 text-sm font-medium hover:underline"
+            >
+              Ukończyłeś wszystkie lekcje — pobierz certyfikat →
+            </Link>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Ukończ wszystkie lekcje ({completedCount}/{totalCount}) żeby odblokować certyfikat
+            </p>
+          )}
+        </div>
+      )}
     </AppShell>
   );
 }

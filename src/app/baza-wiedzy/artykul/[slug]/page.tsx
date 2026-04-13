@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { articles } from "@/data/articles";
 import { categories } from "@/data/categories";
 import { markdownToHtml } from "@/lib/markdown";
+import { FeedbackButtons } from "@/components/feedback-buttons";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -89,8 +90,13 @@ export default async function ArticlePage({
         dangerouslySetInnerHTML={{ __html: html }}
       />
 
+      {/* Feedback */}
+      <div className="mt-10 border-t border-border pt-5">
+        <FeedbackButtons contentType="article" contentId={article.id} />
+      </div>
+
       {/* Tags */}
-      <div className="mt-10 border-t border-border pt-5 animate-fade-in animation-delay-200">
+      <div className="mt-6">
         <div className="flex flex-wrap gap-1.5">
           {article.tags.map((tag) => (
             <span

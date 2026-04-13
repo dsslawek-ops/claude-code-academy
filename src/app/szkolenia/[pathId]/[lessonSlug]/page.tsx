@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { markdownToHtml } from "@/lib/markdown";
+import { FeedbackButtons } from "@/components/feedback-buttons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock } from "lucide-react";
@@ -79,7 +80,12 @@ export default function LessonPage() {
       </div>
 
       {/* Content */}
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <div className="prose-custom" dangerouslySetInnerHTML={{ __html: html }} />
+
+      {/* Feedback */}
+      <div className="mt-8">
+        <FeedbackButtons contentType="lesson" contentId={lesson.id} />
+      </div>
 
       {/* Actions */}
       <div className="mt-10 flex items-center justify-between border-t border-border pt-6">
