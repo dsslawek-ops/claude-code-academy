@@ -39,13 +39,16 @@ const commandCategoryLabels: Record<string, string> = {
 
 export default function CheatsheetPage() {
   const [query, setQuery] = useState("");
+  const [os, setOs] = useState<"mac" | "win">("mac");
   const q = query.toLowerCase();
 
   const filteredShortcuts = shortcuts.filter(
-    (s) =>
-      s.key_combo.toLowerCase().includes(q) ||
-      s.description.toLowerCase().includes(q) ||
-      s.context.toLowerCase().includes(q)
+    (s) => {
+      const combo = os === "mac" ? s.key_combo : s.key_combo_win;
+      return combo.toLowerCase().includes(q) ||
+        s.description.toLowerCase().includes(q) ||
+        s.context.toLowerCase().includes(q);
+    }
   );
 
   const [expandedCmd, setExpandedCmd] = useState<string | null>(null);
@@ -100,29 +103,56 @@ export default function CheatsheetPage() {
 
         {/* Shortcuts */}
         <TabsContent value="shortcuts">
+          {/* OS toggle */}
+          <div className="mb-4 flex items-center gap-1 rounded-md border border-border p-1 w-fit">
+            <button
+              onClick={() => setOs("mac")}
+              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                os === "mac"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              macOS
+            </button>
+            <button
+              onClick={() => setOs("win")}
+              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                os === "win"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Windows
+            </button>
+          </div>
+
           <div className="space-y-1">
-            <div className="grid grid-cols-[140px_1fr_100px] gap-4 border-b border-border px-3 pb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <span>Skrót</span>
+            <div className="grid grid-cols-[160px_1fr_80px] gap-4 border-b border-border px-3 pb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <span>Skrót ({os === "mac" ? "macOS" : "Windows"})</span>
               <span>Opis</span>
-              <span>Platforma</span>
+              <span>Gdzie</span>
             </div>
-            {filteredShortcuts.map((s) => (
-              <div
-                key={s.id}
-                className="grid grid-cols-[140px_1fr_100px] items-center gap-4 rounded-md px-3 py-2.5 transition-colors hover:bg-accent"
-              >
-                <kbd className="inline-flex w-fit items-center rounded border border-border bg-muted px-2 py-1 text-xs font-mono font-medium">
-                  {s.key_combo}
-                </kbd>
-                <div>
-                  <p className="text-sm">{s.description}</p>
-                  <p className="text-xs text-muted-foreground">{s.context}</p>
+            {filteredShortcuts.map((s) => {
+              const combo = os === "mac" ? s.key_combo : s.key_combo_win;
+              return (
+                <div
+                  key={s.id}
+                  className="grid grid-cols-[160px_1fr_80px] items-center gap-4 rounded-md px-3 py-2.5 transition-colors hover:bg-accent"
+                >
+                  <kbd className="inline-flex w-fit items-center rounded border border-border bg-muted px-2 py-1 text-xs font-mono font-medium">
+                    {combo}
+                  </kbd>
+                  <div>
+                    <p className="text-sm">{s.description}</p>
+                    <p className="text-xs text-muted-foreground">{s.context}</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {platformLabels[s.platform]}
+                  </span>
                 </div>
-                <Badge variant="secondary" className="w-fit text-xs">
-                  {platformLabels[s.platform]}
-                </Badge>
-              </div>
-            ))}
+              );
+            })}
             {filteredShortcuts.length === 0 && (
               <p className="py-8 text-center text-sm text-muted-foreground">
                 Brak wyników dla &ldquo;{query}&rdquo;

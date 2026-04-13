@@ -24,6 +24,7 @@ export interface Article {
 export interface Shortcut {
   id: string;
   key_combo: string;
+  key_combo_win: string;
   description: string;
   category: "navigation" | "editing" | "git" | "search" | "tools" | "session" | "vscode";
   platform: "macos" | "vscode" | "both";
