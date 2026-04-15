@@ -70,7 +70,7 @@ export default function CheatsheetPage() {
   return (
     <AppShell>
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold tracking-tight">Ściągawka</h1>
+        <h1 className="mb-2 text-4xl font-semibold tracking-tight antialiased font-[-apple-system,BlinkMacSystemFont,'SF_Pro_Display','SF_Pro_Text','Helvetica_Neue',sans-serif]">Ściągawka</h1>
         <p className="text-muted-foreground">
           Wszystkie skróty, komendy i narzędzia w jednym miejscu. Filtruj i
           szukaj.
@@ -180,14 +180,14 @@ export default function CheatsheetPage() {
                           onClick={() =>
                             setExpandedCmd(isExpanded ? null : c.id)
                           }
-                          className="flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-accent"
+                          className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-accent"
                         >
                           {isExpanded ? (
-                            <ChevronDown className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+                            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
                           ) : (
-                            <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+                            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                           )}
-                          <code className="shrink-0 rounded bg-muted px-2 py-1 text-sm font-mono font-medium text-primary">
+                          <code className="inline-block w-40 shrink-0 rounded bg-muted px-2 py-1 text-sm font-mono font-medium text-primary">
                             {c.command}
                           </code>
                           <p className="min-w-0 text-sm">
