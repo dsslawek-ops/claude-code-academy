@@ -4,9 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
 import { markdownToHtml } from "@/lib/markdown";
 import { FeedbackButtons } from "@/components/feedback-buttons";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Clock } from "lucide-react";
 import Link from "next/link";
 import { useLessons } from "@/hooks/use-lessons";
 import { useCallback } from "react";
@@ -37,74 +35,92 @@ export default function LessonPage() {
 
   if (!lesson) {
     return (
-      <AppShell>
-        <p>Lekcja nie znaleziona.</p>
+      <AppShell width="prose">
+        <p className="text-muted-foreground">Lekcja nie znaleziona.</p>
       </AppShell>
     );
   }
 
   const html = markdownToHtml(lesson.content);
+  const total = lessons.length;
+  const positionLabel = `${String(currentIndex + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
 
   return (
-    <AppShell>
-      {/* Nav */}
-      <div className="mb-6">
-        <Link
-          href={`/szkolenia/${pathId}`}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Wróć do ścieżki
-        </Link>
-      </div>
+    <AppShell width="prose">
+      {/* Breadcrumb */}
+      <Link
+        href={`/szkolenia/${pathId}`}
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Wróć do ścieżki
+      </Link>
 
       {/* Header */}
-      <div className="mb-8">
-        <div className="mb-2 flex items-center gap-2">
-          <Badge variant="secondary">{lesson.module_name}</Badge>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+      <div className="mb-10 mt-6">
+        <div className="mb-4 flex flex-wrap items-center gap-3 text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
+          <span>{lesson.module_name}</span>
+          <span className="text-muted-foreground/40">·</span>
+          <span className="inline-flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {lesson.duration_minutes} min
-          </div>
+          </span>
+          <span className="text-muted-foreground/40">·</span>
+          <span>{positionLabel}</span>
           {lesson.completed && (
-            <Badge
-              variant="outline"
-              className="bg-green-500/10 text-green-400 border-green-500/20"
-            >
-              <CheckCircle2 className="mr-1 h-3 w-3" />
-              Ukończona
-            </Badge>
+            <>
+              <span className="text-muted-foreground/40">·</span>
+              <span className="inline-flex items-center gap-1 text-brand">
+                <Check className="h-3 w-3" strokeWidth={3} />
+                Ukończona
+              </span>
+            </>
           )}
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">{lesson.title}</h1>
+        <h1 className="font-display text-4xl italic leading-[1.05] tracking-tight sm:text-5xl">
+          {lesson.title}
+        </h1>
       </div>
 
       {/* Content */}
-      <div className="prose-custom" dangerouslySetInnerHTML={{ __html: html }} />
+      <article
+        className="prose-custom"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
 
       {/* Feedback */}
-      <div className="mt-8">
+      <div className="mt-10">
         <FeedbackButtons contentType="lesson" contentId={lesson.id} />
       </div>
 
       {/* Actions */}
-      <div className="mt-10 flex items-center justify-between border-t border-border pt-6">
+      <div className="mt-12 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
         {prevLesson ? (
           <Link
             href={`/szkolenia/${pathId}/${prevLesson.slug}`}
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+            className="group inline-flex max-w-[240px] items-start gap-2 text-left text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ArrowLeft className="h-4 w-4" />
-            {prevLesson.title}
+            <ArrowLeft className="mt-0.5 h-3.5 w-3.5 shrink-0 transition-transform group-hover:-translate-x-0.5" />
+            <span className="flex flex-col gap-0.5">
+              <span className="text-[10px] uppercase tracking-wider">
+                Poprzednia
+              </span>
+              <span className="truncate text-[13px] text-foreground">
+                {prevLesson.title}
+              </span>
+            </span>
           </Link>
         ) : (
           <div />
         )}
 
-        <Button onClick={handleComplete}>
+        <button
+          onClick={handleComplete}
+          className="group inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-brand-contrast shadow-[0_1px_0_rgba(255,255,255,0.15)_inset,0_8px_24px_-8px_rgba(217,119,87,0.5)] transition-transform hover:-translate-y-[1px]"
+        >
           {lesson.completed ? "Następna lekcja" : "Ukończ lekcję"}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </button>
       </div>
     </AppShell>
   );

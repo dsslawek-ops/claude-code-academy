@@ -28,19 +28,25 @@ export function FeedbackButtons({ contentType, contentId }: FeedbackButtonsProps
 
   if (submitted !== null) {
     return (
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        {submitted ? <ThumbsUp className="h-3.5 w-3.5" /> : <ThumbsDown className="h-3.5 w-3.5" />}
+      <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 text-xs text-muted-foreground">
+        {submitted ? (
+          <ThumbsUp className="h-3.5 w-3.5 text-brand" />
+        ) : (
+          <ThumbsDown className="h-3.5 w-3.5" />
+        )}
         Dzięki za opinię
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-muted-foreground">Czy to było pomocne?</span>
+    <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5">
+      <span className="mr-2 text-[12px] text-muted-foreground">
+        Pomocne?
+      </span>
       <button
         onClick={() => submit(true)}
-        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-brand"
         aria-label="Tak, pomocne"
       >
         <ThumbsUp className="h-3.5 w-3.5" />

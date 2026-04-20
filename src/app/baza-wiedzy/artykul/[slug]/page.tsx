@@ -3,24 +3,17 @@ import { articles } from "@/data/articles";
 import { categories } from "@/data/categories";
 import { markdownToHtml } from "@/lib/markdown";
 import { FeedbackButtons } from "@/components/feedback-buttons";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-const difficultyLabels: Record<string, { label: string; color: string }> = {
-  beginner: {
-    label: "Podstawowy",
-    color: "bg-green-500/10 text-green-400 border-green-500/20",
-  },
-  intermediate: {
-    label: "Średni",
-    color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-  },
-  advanced: {
-    label: "Zaawansowany",
-    color: "bg-red-500/10 text-red-400 border-red-500/20",
-  },
+const difficultyConfig: Record<
+  string,
+  { label: string; className: string }
+> = {
+  beginner: { label: "Podstawowy", className: "text-ok" },
+  intermediate: { label: "Średni", className: "text-warn" },
+  advanced: { label: "Zaawansowany", className: "text-danger" },
 };
 
 export function generateStaticParams() {
@@ -37,7 +30,7 @@ export default async function ArticlePage({
   if (!article) notFound();
 
   const category = categories.find((c) => c.id === article.category_id);
-  const diff = difficultyLabels[article.difficulty];
+  const diff = difficultyConfig[article.difficulty];
   const html = markdownToHtml(article.content);
 
   const relatedArticles = articles
@@ -50,84 +43,102 @@ export default async function ArticlePage({
     .slice(0, 3);
 
   return (
-    <AppShell>
+    <AppShell width="prose">
       {/* Breadcrumb */}
-      <nav className="mb-8 flex items-center gap-1.5 text-xs text-muted-foreground animate-fade-in">
-        <Link href="/baza-wiedzy" className="hover:text-foreground transition-colors">
+      <nav className="mb-8 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Link
+          href="/baza-wiedzy"
+          className="transition-colors hover:text-foreground"
+        >
           Baza wiedzy
         </Link>
-        <ChevronRight className="h-3 w-3" />
         {category && (
           <>
-            <span className="text-foreground/60">{category.name}</span>
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3 w-3 text-muted-foreground/50" />
+            <Link
+              href={`/baza-wiedzy#${category.slug}`}
+              className="transition-colors hover:text-foreground"
+            >
+              {category.name}
+            </Link>
           </>
         )}
-        <span className="truncate text-foreground/80">{article.title}</span>
       </nav>
 
       {/* Header */}
-      <div className="mb-10 animate-fade-in">
-        <div className="mb-3 flex flex-wrap items-center gap-2">
+      <header className="mb-10">
+        <div className="mb-5 flex flex-wrap items-center gap-3 text-[11px] font-mono uppercase tracking-wider">
           {category && (
-            <Badge variant="secondary" className="text-xs">{category.name}</Badge>
+            <span className="text-muted-foreground">{category.name}</span>
           )}
-          <Badge variant="outline" className={`text-xs ${diff.color}`}>
-            {diff.label}
-          </Badge>
+          <span className="text-muted-foreground/40">·</span>
+          <span className={diff.className}>{diff.label}</span>
         </div>
-        <h1 className="mb-3 text-3xl font-bold tracking-tight">
+        <h1 className="font-display text-4xl italic leading-[1.05] tracking-tight sm:text-[54px]">
           {article.title}
         </h1>
-        <p className="text-base leading-relaxed text-muted-foreground">
+        <p className="mt-5 text-[16px] leading-relaxed text-muted-foreground">
           {article.summary}
         </p>
-      </div>
+      </header>
 
       {/* Content */}
-      <div
-        className="prose-custom animate-fade-in animation-delay-100"
+      <article
+        className="prose-custom"
         dangerouslySetInnerHTML={{ __html: html }}
       />
 
-      {/* Feedback */}
-      <div className="mt-10 border-t border-border pt-5">
-        <FeedbackButtons contentType="article" contentId={article.id} />
-      </div>
-
       {/* Tags */}
-      <div className="mt-6">
-        <div className="flex flex-wrap gap-1.5">
-          {article.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-muted px-2 py-0.5 text-[11px] text-muted-foreground"
-            >
-              #{tag}
-            </span>
-          ))}
+      {article.tags.length > 0 && (
+        <div className="mt-10 border-t border-border pt-6">
+          <p className="label-eyebrow mb-3">Tagi</p>
+          <div className="flex flex-wrap gap-1.5">
+            {article.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-md border border-border bg-card px-2 py-1 font-mono text-[11px] text-muted-foreground"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
         </div>
+      )}
+
+      {/* Feedback */}
+      <div className="mt-8">
+        <FeedbackButtons contentType="article" contentId={article.id} />
       </div>
 
       {/* Related */}
       {relatedArticles.length > 0 && (
-        <div className="mt-8 animate-fade-in animation-delay-300">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Zobacz też
-          </h3>
-          <div className="space-y-1">
-            {relatedArticles.map((a) => (
-              <Link
+        <section className="mt-14 border-t border-border pt-10">
+          <p className="label-eyebrow mb-5">Zobacz też</p>
+          <ul className="overflow-hidden rounded-xl border border-border bg-card">
+            {relatedArticles.map((a, i) => (
+              <li
                 key={a.id}
-                href={`/baza-wiedzy/artykul/${a.slug}`}
-                className="group flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-accent"
+                className={i > 0 ? "border-t border-border" : ""}
               >
-                <ArrowLeft className="h-3 w-3 rotate-180 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                <span className="text-sm">{a.title}</span>
-              </Link>
+                <Link
+                  href={`/baza-wiedzy/artykul/${a.slug}`}
+                  className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-accent"
+                >
+                  <ArrowLeft className="h-3 w-3 rotate-180 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <h4 className="truncate text-[14px] font-medium text-foreground">
+                      {a.title}
+                    </h4>
+                    <p className="truncate text-[12.5px] text-muted-foreground">
+                      {a.summary}
+                    </p>
+                  </div>
+                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                </Link>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
       )}
     </AppShell>
   );

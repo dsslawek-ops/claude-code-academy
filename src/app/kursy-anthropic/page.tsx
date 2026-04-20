@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { officialCourses } from "@/data/official-courses";
-import { ExternalLink } from "lucide-react";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
 const categoryLabels: Record<string, string> = {
@@ -16,7 +16,12 @@ const levelLabels: Record<string, string> = {
   advanced: "Zaawansowany",
 };
 
-// Kursy które mamy przetłumaczone jako ścieżki szkoleniowe
+const levelClass: Record<string, string> = {
+  beginner: "text-ok",
+  intermediate: "text-warn",
+  advanced: "text-danger",
+};
+
 const localPaths: Record<string, string> = {
   cc101: "/szkolenia/cc101",
   "cc-action": "/szkolenia/cc-action",
@@ -33,105 +38,124 @@ export default function OfficialCoursesPage() {
 
   return (
     <AppShell>
+      {/* Header */}
       <div className="mb-12">
-        <p className="mb-3 text-xs font-medium tracking-wide uppercase text-muted-foreground">
-          Oficjalne materiały
-        </p>
-        <h1 className="mb-4 text-3xl font-semibold leading-tight tracking-tight">
-          Kursy Anthropic
+        <p className="label-eyebrow mb-4">Oficjalne materiały</p>
+        <h1 className="text-4xl leading-[1.05] tracking-tight sm:text-5xl">
+          Kursy <span className="font-display italic">Anthropic</span>
         </h1>
-        <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-          Oficjalne szkolenia od twórców Claude. Dwa kluczowe kursy dostępne
-          po polsku na naszej platformie. Reszta z linkami do oryginałów.
+        <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+          Oficjalne szkolenia od twórców Claude. Dwa kluczowe kursy dostępne po
+          polsku — reszta z linkami do oryginałów na Skilljar.
         </p>
       </div>
 
-      {grouped.map((group) => (
-        <div key={group.key} className="mb-12">
-          <p className="mb-4 text-xs font-medium tracking-wide uppercase text-muted-foreground">
-            {group.label}
-          </p>
-          <div className="space-y-2">
-            {group.courses.map((course) => {
-              const localPath = localPaths[course.id];
-              const isLocal = !!localPath;
+      <div className="space-y-12">
+        {grouped.map((group) => (
+          <section key={group.key}>
+            <div className="mb-4 flex items-baseline gap-3">
+              <span className="label-eyebrow">{group.label}</span>
+              <span className="h-px flex-1 bg-border" />
+              <span className="font-mono text-[11px] text-muted-foreground">
+                {group.courses.length}
+              </span>
+            </div>
 
-              const content = (
-                <div className="group flex items-start justify-between rounded-lg border border-border p-5 transition-colors hover:bg-accent">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-medium">
-                        {course.titlePl}
-                      </h3>
-                      {isLocal ? (
-                        <span className="rounded bg-foreground/10 px-2 py-0.5 text-xs font-medium text-foreground">
-                          Po polsku
-                        </span>
-                      ) : (
-                        <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                      )}
-                    </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {course.title} · {levelLabels[course.level]}
-                    </p>
-                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                      {course.description}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {course.topics.slice(0, 6).map((topic) => (
+            <ul className="space-y-2">
+              {group.courses.map((course) => {
+                const localPath = localPaths[course.id];
+                const isLocal = !!localPath;
+
+                const content = (
+                  <div className="group flex items-start gap-4 rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:bg-accent">
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
+                        <h3 className="text-[15px] font-medium text-foreground">
+                          {course.titlePl}
+                        </h3>
+                        {isLocal ? (
+                          <span className="rounded-full border border-brand/30 bg-brand-soft px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-brand">
+                            Po polsku
+                          </span>
+                        ) : null}
                         <span
-                          key={topic}
-                          className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+                          className={`font-mono text-[10px] uppercase tracking-wider ${levelClass[course.level]}`}
                         >
-                          {topic}
+                          {levelLabels[course.level]}
                         </span>
-                      ))}
-                      {course.topics.length > 6 && (
-                        <span className="text-xs text-muted-foreground">
-                          +{course.topics.length - 6}
-                        </span>
-                      )}
+                      </div>
+                      <p className="mb-3 text-[12px] italic text-muted-foreground">
+                        {course.title}
+                      </p>
+                      <p className="mb-3 text-[13px] leading-relaxed text-muted-foreground">
+                        {course.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {course.topics.slice(0, 6).map((topic) => (
+                          <span
+                            key={topic}
+                            className="rounded-md border border-border bg-background px-2 py-0.5 font-mono text-[11px] text-muted-foreground"
+                          >
+                            {topic}
+                          </span>
+                        ))}
+                        {course.topics.length > 6 && (
+                          <span className="px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+                            +{course.topics.length - 6}
+                          </span>
+                        )}
+                      </div>
                     </div>
+
+                    <span className="mt-1 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground">
+                      {isLocal ? (
+                        <ArrowUpRight className="h-4 w-4" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4" />
+                      )}
+                    </span>
                   </div>
-                </div>
-              );
-
-              if (isLocal) {
-                return (
-                  <Link key={course.id} href={localPath}>
-                    {content}
-                  </Link>
                 );
-              }
 
-              return (
-                <a
-                  key={course.id}
-                  href={course.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {content}
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+                if (isLocal) {
+                  return (
+                    <li key={course.id}>
+                      <Link href={localPath}>{content}</Link>
+                    </li>
+                  );
+                }
 
-      <div className="rounded-lg border border-dashed border-border p-6 text-center">
-        <p className="text-xs text-muted-foreground">
-          Kursy oznaczone "Po polsku" są dostępne bezpośrednio na naszej platformie.
-          Pozostałe prowadzone po angielsku na{" "}
+                return (
+                  <li key={course.id}>
+                    <a
+                      href={course.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {content}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
+
+      <div className="mt-12 rounded-xl border border-dashed border-border bg-card p-6 text-center">
+        <p className="text-[12.5px] leading-relaxed text-muted-foreground">
+          Kursy z etykietą <em className="not-italic text-brand">Po polsku</em>{" "}
+          są dostępne bezpośrednio na naszej platformie. Pozostałe po angielsku
+          na{" "}
           <a
             href="https://anthropic.skilljar.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline decoration-border underline-offset-2 hover:decoration-foreground"
+            className="text-foreground underline decoration-brand/50 underline-offset-4 hover:decoration-brand"
           >
             anthropic.skilljar.com
-          </a>
-          {" "}(darmowy dostęp).
+          </a>{" "}
+          (darmowy dostęp).
         </p>
       </div>
     </AppShell>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
-import { Badge } from "@/components/ui/badge";
 import { Loader2, RefreshCw, Sparkles, Wrench, Bug } from "lucide-react";
 
 interface ChangelogEntry {
@@ -61,19 +60,32 @@ const typeConfig = {
   feature: {
     label: "Nowa funkcja",
     icon: Sparkles,
-    color: "bg-green-500/10 text-green-400 border-green-500/20",
+    color: "text-brand",
+    dot: "bg-brand",
   },
   change: {
     label: "Zmiana",
     icon: Wrench,
-    color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+    color: "text-warn",
+    dot: "bg-warn",
   },
   fix: {
     label: "Poprawka",
     icon: Bug,
-    color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    color: "text-info",
+    dot: "bg-info",
   },
-};
+} as const;
+
+function formatDate(s: string) {
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return s;
+  return d.toLocaleDateString("pl-PL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 export default function ChangelogPage() {
   const [liveEntries, setLiveEntries] = useState<ChangelogEntry[]>([]);
@@ -112,23 +124,22 @@ export default function ChangelogPage() {
   const allEntries = liveEntries.length > 0 ? liveEntries : staticEntries;
 
   return (
-    <AppShell>
-      <div className="mb-10">
-        <p className="mb-3 text-xs font-medium tracking-wide uppercase text-muted-foreground">
-          Changelog
-        </p>
-        <h1 className="mb-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-          Co nowego w Claude Code
+    <AppShell width="prose">
+      {/* Header */}
+      <div className="mb-12">
+        <p className="label-eyebrow mb-4">Changelog</p>
+        <h1 className="text-4xl leading-[1.05] tracking-tight sm:text-5xl">
+          Co nowego w <span className="font-display italic text-brand">Claude Code</span>
         </h1>
-        <p className="mb-6 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Aktualizacje Claude Code i naszej platformy.
+        <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
+          Aktualizacje Claude Code i naszej platformy, ułożone chronologicznie.
         </p>
 
-        <div className="flex items-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center gap-3">
           <button
             onClick={fetchChangelog}
             disabled={loading}
-            className="flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs transition-colors hover:bg-accent disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 text-xs font-medium transition-colors hover:border-foreground/25 hover:bg-accent disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -139,45 +150,70 @@ export default function ChangelogPage() {
           </button>
           {lastFetched && (
             <span className="text-xs text-muted-foreground">
-              Ostatnio: {lastFetched}
+              Ostatnio sprawdzone: {lastFetched}
             </span>
           )}
-          {error && (
-            <span className="text-xs text-destructive">{error}</span>
-          )}
+          {error && <span className="text-xs text-danger">{error}</span>}
         </div>
 
         {liveEntries.length > 0 && (
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="mt-3 text-xs text-muted-foreground">
             Pobrano {liveEntries.length} wpisów z oficjalnego changelog Anthropic
           </p>
         )}
       </div>
 
-      <div className="space-y-3">
-        {allEntries.map((entry, i) => {
-          const config = typeConfig[entry.type] || typeConfig.feature;
-          return (
-            <div
-              key={`${entry.date}-${i}`}
-              className="rounded-lg border border-border p-4"
-            >
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <Badge variant="outline" className={config.color}>
-                  <config.icon className="mr-1 h-3 w-3" />
-                  {config.label}
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {entry.date}
-                </span>
-              </div>
-              <h3 className="mb-1 text-sm font-medium">{entry.title}</h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                {entry.summary}
-              </p>
-            </div>
-          );
-        })}
+      {/* Timeline */}
+      <div className="relative">
+        <div
+          aria-hidden
+          className="absolute left-[7px] top-3 bottom-3 w-px bg-border"
+        />
+
+        <ul className="space-y-10">
+          {allEntries.map((entry, i) => {
+            const config = typeConfig[entry.type] || typeConfig.feature;
+            const Icon = config.icon;
+            return (
+              <li
+                key={`${entry.date}-${i}`}
+                className="relative grid grid-cols-[auto_1fr] gap-x-5"
+              >
+                <div className="relative flex flex-col items-center pt-1.5">
+                  <span
+                    className={`relative grid h-[15px] w-[15px] place-items-center rounded-full border-2 border-background ${config.dot}`}
+                  >
+                    <span className="absolute inset-[-6px] rounded-full bg-background" />
+                    <span
+                      className={`relative h-[15px] w-[15px] rounded-full ${config.dot}`}
+                    />
+                  </span>
+                </div>
+
+                <div className="min-w-0">
+                  <div className="mb-2 flex flex-wrap items-center gap-2.5 text-[11px]">
+                    <span
+                      className={`inline-flex items-center gap-1.5 font-mono uppercase tracking-wider ${config.color}`}
+                    >
+                      <Icon className="h-3 w-3" />
+                      {config.label}
+                    </span>
+                    <span className="text-muted-foreground/60">·</span>
+                    <time className="text-muted-foreground">
+                      {formatDate(entry.date)}
+                    </time>
+                  </div>
+                  <h3 className="text-[15px] font-medium tracking-tight text-foreground">
+                    {entry.title}
+                  </h3>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                    {entry.summary}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </AppShell>
   );

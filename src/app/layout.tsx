@@ -1,27 +1,36 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin", "latin-ext"],
 });
 
 export const metadata: Metadata = {
-  title: "Claude Code Academy",
+  title: "Claude Code Academy — polska platforma szkoleniowa",
   description:
-    "Interaktywna platforma szkoleniowa Claude Code — po polsku, dla nie-programistów",
+    "Opanuj Claude Code po polsku — szkolenia krok po kroku, baza wiedzy, ściągawka, AI troubleshooter. Dla nie-programistów i nie tylko.",
   metadataBase: new URL("https://claude-code-academy-tan.vercel.app"),
   openGraph: {
     title: "Claude Code Academy",
-    description: "Opanuj Claude Code — szkolenia, ściągawki, AI troubleshooter",
+    description:
+      "Opanuj Claude Code — szkolenia, ściągawki, AI troubleshooter.",
     type: "website",
+    locale: "pl_PL",
   },
 };
 
@@ -33,14 +42,14 @@ export default function RootLayout({
   return (
     <html
       lang="pl"
-      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} dark h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
-        <meta name="theme-color" content="#0a0a0a" />
+        <meta name="theme-color" content="#0b0a08" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.remove('dark')}else if(!t&&!window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.remove('dark')}}catch(e){}})()`,
           }}
         />
       </head>
